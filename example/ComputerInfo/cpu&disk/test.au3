@@ -21,17 +21,23 @@ Private Declare Function GetCpuInfo Lib "Getinfo.dll" (ByVal Parameters As Long)
 
 
 $Dll=DllOpen("Getinfo.dll")
-$sReturn=DllCall($Dll,"str","GetDiskIDName","str","DiskName","byte",0)
-ConsoleWrite( "硬盘名称" & StringStripWS($sReturn[0],2) & @CRLF )
+$sReturn1=DllCall($Dll,"str","GetDiskIDName","str","DiskName","byte",0)
+ConsoleWrite( "硬盘名称" & StringStripWS($sReturn1[0],2) & @CRLF )
 
-$sReturn=DllCall($Dll,"str","GetDiskIDName","str","DiskId","byte",0)
-ConsoleWrite( "硬盘ID" & $sReturn[0] & @CRLF )
+$sReturn2=DllCall($Dll,"str","GetDiskIDName","str","DiskId","byte",0)
+ConsoleWrite( "硬盘ID" & $sReturn2[0] & @CRLF )
 
-$sReturn=DllCall($Dll,"str","GetCpuInfo","long",0)
-ConsoleWrite( "CPU序列号的前8位" & $sReturn[0] & @CRLF )
+$sReturn3=DllCall($Dll,"str","GetCpuInfo","long",0)
+ConsoleWrite( "CPU序列号的前8位" & $sReturn3[0] & @CRLF )
 
-$sReturn=DllCall($Dll,"str","GetCpuInfo","long",1)
-ConsoleWrite( "CPU序列号16位" & $sReturn[0] & @CRLF )
+$sReturn4=DllCall($Dll,"str","GetCpuInfo","long",1)
+ConsoleWrite( "CPU序列号16位" & $sReturn4[0] & @CRLF & "==========" & $sReturn4[1] )
 
 DllClose($Dll)
+
+MsgBox(64,"硬盘名称",StringStripWS($sReturn1[0],2))
+MsgBox(64,"硬盘ID",$sReturn2[0])
+;MsgBox(64,"CPU序列号的前8位",$sReturn3[0])
+MsgBox(64,"CPU序列号16位",$sReturn4[0])
+
 
