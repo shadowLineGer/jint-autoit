@@ -1,51 +1,65 @@
 
+$DATAFILEPATH = "c:\"
 
-
-
-
-;初始化各种路径
-$SITELISTPATH = "" & @ScriptDir & "\sitelist.txt"
-
-$now = @YEAR & @MON & @MDAY & @HOUR ;& @MIN & @SEC
-$DATAFILEPATH = @ScriptDir & "\" & $now
-$ret = DirCreate($DATAFILEPATH)
-
-
-; 打开IE
-OpenIE()
-
-; 清除IE缓存
-ClearCache()
-
-;打开 httpwatch 软件
-OpenHttpWatch()
-
-If Not checkAuth() Then
-	MsgBox(0, "Error", "Err00001:Network Error", 10 )
-	Exit
+if $cmdLine[0] > 0 Then
+	testMain($cmdLine[1])
+Else
+	MsgBox(0,"Error","请指定工作目录",10)
 EndIf
 
+Func testMain( $workpath )
 
-; 读入待测站点列表
-$file = FileOpen($SITELISTPATH, 0)
-While 1
-	$line = FileReadLine($file)
-	If @error = -1 Then ExitLoop
-	ConsoleWrite("" & $line & @CRLF)
+	;初始化各种路径
+	$SITELISTPATH = "" & @ScriptDir & "\sitelist.txt"
 
 
-	; 如果URL是正确的，进行速度测试
-	If checkUrl($line) Then
-		If Not FileExists($DATAFILEPATH & "\" & $line & ".csv") Then
-			TestSpeed($line)
-		Else
-			ConsoleWrite($line & ".csv is Exist. Skip! " & @CRLF)
-		EndIf
-
+	$now = @YEAR & @MON & @MDAY & @HOUR ;& @MIN & @SEC
+    if FileExists( $workpath ) Then
+		$DATAFILEPATH = $workpath & "\" & $now
+	else
+		$DATAFILEPATH = @ScriptDir & "\" & $now
 	EndIf
-WEnd
-FileClose($file)
-MsgBox(0, "Output", "Finished")
+	$ret = DirCreate($DATAFILEPATH)
+
+
+	; 打开IE
+	OpenIE()
+
+	; 清除IE缓存
+	ClearCache()
+
+	;打开 httpwatch 软件
+	OpenHttpWatch()
+
+	If Not checkAuth() Then
+		MsgBox(0, "Error", "Err00001:Network Error", 10 )
+		Exit
+	EndIf
+
+
+	; 读入待测站点列表
+	$file = FileOpen($SITELISTPATH, 0)
+	While 1
+		$line = FileReadLine($file)
+		If @error = -1 Then ExitLoop
+		ConsoleWrite("" & $line & @CRLF)
+
+
+		; 如果URL是正确的，进行速度测试
+		If checkUrl($line) Then
+			If Not FileExists($DATAFILEPATH & "\" & $line & ".csv") Then
+				TestSpeed($line)
+			Else
+				ConsoleWrite($line & ".csv is Exist. Skip! " & @CRLF)
+			EndIf
+
+		EndIf
+	WEnd
+	FileClose($file)
+	MsgBox(0, "Output", "Finished")
+
+EndFunc
+
 
 Func checkUrl($url)
 	If StringLen($url) > 0 Then
@@ -140,12 +154,12 @@ Func TestSpeed($url)
 EndFunc   ;==>TestSpeed
 
 Func ClearCache()
-	Sleep(1000)
+	Sleep(500)
 	$title = "[CLASS:IEFrame]"
 	If Not WinActive($title, "") Then WinActivate($title, "")
-	Sleep(1000)
+	Sleep(500)
 	Send("^+{DEL}")
-	Sleep(1000)
+	Sleep(500)
 
 	$title2 = "Delete Browsing History"
 	WinActivate($title2, "")
@@ -165,7 +179,7 @@ Func OpenHttpWatch()
 	WinMove($title, "", 45, 0)
 	Sleep(1000)
 	MouseClick("", 60, 200)
-	Sleep(1000)
+	Sleep(500)
 	Send("+{F2}")
 EndFunc   ;==>OpenHttpWatch
 
