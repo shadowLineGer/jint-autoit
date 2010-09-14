@@ -31,7 +31,7 @@ $sReturn3=DllCall($Dll,"str","GetCpuInfo","long",0)
 ConsoleWrite( "CPU序列号的前8位" & $sReturn3[0] & @CRLF )
 
 $sReturn4=DllCall($Dll,"str","GetCpuInfo","long",1)
-ConsoleWrite( "CPU序列号16位" & $sReturn4[0] & @CRLF & "==========" & $sReturn4[1] )
+ConsoleWrite( "CPU序列号16位" & $sReturn4[0] & @CRLF & "=====" & $sReturn4[1] & "=====" )
 
 DllClose($Dll)
 
