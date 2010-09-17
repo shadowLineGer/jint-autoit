@@ -5,6 +5,7 @@ if $cmdLine[0] > 0 Then
 	testMain($cmdLine[1])
 Else
 	MsgBox(0,"Error","请指定工作目录",10)
+	testMain($DATAFILEPATH)
 EndIf
 
 Func testMain( $workpath )
@@ -21,41 +22,46 @@ Func testMain( $workpath )
 	EndIf
 	$ret = DirCreate($DATAFILEPATH)
 
+    ; 因为测试有时会出错，无法得到数据，故多做几次，做过的不会重复执行
+	For $i=0 To 2
+		; 打开IE
+		OpenIE()
 
-	; 打开IE
-	OpenIE()
+		; 清除IE缓存
+		ClearCache()
 
-	; 清除IE缓存
-	ClearCache()
+		;打开 httpwatch 软件
+		OpenHttpWatch()
 
-	;打开 httpwatch 软件
-	OpenHttpWatch()
-
-	If Not checkAuth() Then
-		MsgBox(0, "Error", "Err00001:Network Error", 10 )
-		Exit
-	EndIf
-
-
-	; 读入待测站点列表
-	$file = FileOpen($SITELISTPATH, 0)
-	While 1
-		$line = FileReadLine($file)
-		If @error = -1 Then ExitLoop
-		ConsoleWrite("" & $line & @CRLF)
-
-
-		; 如果URL是正确的，进行速度测试
-		If checkUrl($line) Then
-			If Not FileExists($DATAFILEPATH & "\" & $line & ".csv") Then
-				TestSpeed($line)
-			Else
-				ConsoleWrite($line & ".csv is Exist. Skip! " & @CRLF)
-			EndIf
-
+		If Not checkAuth() Then
+			MsgBox(0, "Error", "Err00001:Network Error", 10 )
+			Exit
 		EndIf
-	WEnd
-	FileClose($file)
+
+
+		; 读入待测站点列表
+		$file = FileOpen($SITELISTPATH, 0)
+		While 1
+			$line = FileReadLine($file)
+			If @error = -1 Then ExitLoop
+			ConsoleWrite("" & $line & @CRLF)
+
+			; 如果URL是正确的，进行速度测试
+			If checkUrl($line) Then
+				If Not FileExists($DATAFILEPATH & "\" & $line & ".csv") Then
+					TestSpeed($line)
+				Else
+					ConsoleWrite($line & ".csv is Exist. Skip! " & @CRLF)
+				EndIf
+
+			EndIf
+		WEnd
+		FileClose($file)
+
+		CloseHttpWatch()
+		CloseIE()
+	Next
+
 	MsgBox(0, "Output", "Finished")
 
 EndFunc
@@ -174,6 +180,13 @@ Func OpenIE()
 	EndIf
 EndFunc   ;==>OpenIE
 
+Func CloseIE()
+	If ProcessExists("iexplore.exe") Then
+		ProcessClose("iexplore.exe")
+		Sleep(1000)
+	EndIf
+EndFunc   ;==>OpenIE
+
 Func OpenHttpWatch()
 	$title = "[CLASS:IEFrame]"
 	WinMove($title, "", 45, 0)
@@ -182,6 +195,7 @@ Func OpenHttpWatch()
 	Sleep(500)
 	Send("+{F2}")
 EndFunc   ;==>OpenHttpWatch
+
 
 
 Func checkAuth()
