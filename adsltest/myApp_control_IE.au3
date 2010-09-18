@@ -50,6 +50,7 @@ Func testMain( $workpath, $username, $testplace )
 				If Not FileExists($DATAFILEPATH & "\" & $line & ".csv") Then
 					TestSpeed($line, $DATAFILEPATH)
 					TrayTip("TEST IN PROCESS", "Site: " & $line & " test finished!" & @CRLF & "It's " & $i & ".", 2, 1)
+					SaveData($line, $DATAFILEPATH, $testplace, $now )
 				Else
 					ConsoleWrite($line & ".csv is Exist. Skip! " & @CRLF)
 				EndIf
@@ -59,7 +60,6 @@ Func testMain( $workpath, $username, $testplace )
 		FileClose($file)
 
 		CloseIE()
-
 
 	Next
 
@@ -72,6 +72,34 @@ Func testMain( $workpath, $username, $testplace )
 
 
 	MsgBox(0, "Output", "Finished", 10)
+
+EndFunc
+
+Func SaveData($url, $dataFilePath, $testplace, $roundNo)
+	;计算页面装载时间，并将数据送服务器。
+	$recordFilePath = $dataFilePath & "\" & $url & ".csv"
+	prt( "$recordFilePath: " & $recordFilePath )
+
+
+	If 1 == FileExists( $recordFilePath ) Then
+
+		$filetime = FileGetTime($recordFilePath, 0, 1);
+		prt( $filetime )
+		$testtime = $filetime
+
+		$ret = ReadCSV( $recordFilePath )
+		prt( $ret )
+
+		$reqUrl = "http://kuandaiceshi.appspot.com/savedata?place=" & $testplace _
+				  & "&roundno=" & $roundNo & "&url=" & $url & "&testtime=" & $testtime _
+				  & "&loadtime=" & $ret
+		prt($reqUrl)
+		$response = InetRead ( $reqUrl, 1)
+		$ret2 = BinaryToString($response)
+		prt( $ret2 )
+	Else
+		prt($recordFilePath & " Not Exist!")
+	EndIf
 
 EndFunc
 
@@ -114,15 +142,13 @@ Func TestSpeed($url, $dataFilePath )
 			Or StringInStr($statusText, "Done") Or StringInStr($statusText, "完成") _
 			Or StringInStr($statusText, "完毕") _
 			Then
-
-			ConsoleWrite("Status: >>>" & $statusText & "<<<" & @CRLF)
-			$count = $count + 1
+				;ConsoleWrite("Status: >>>" & $statusText & "<<<" & @CRLF)
+				$count = $count + 1
 		Else
-			$count = 0
+				$count = 0
 		EndIf
 
-		If $count > 10 Or $Totalcount > 1150 Then
-
+		If $count > 10 Or $Totalcount > 1050 Then
 			ExitLoop
 		Else
 			Sleep(100)
@@ -135,13 +161,14 @@ Func TestSpeed($url, $dataFilePath )
 
 
 	; 保存 httpwatch 记录数据
+	$recordFilePath = $dataFilePath & "\" & $url
 	Send("^+{c}")
 	Sleep(200)
 	Send("{BACKSPACE}")
 	ConsoleWrite("" & $url & @CRLF)
 	Sleep(200)
-	Send($dataFilePath & "\" & $url)
-	Sleep(2000)
+	Send($recordFilePath)
+	Sleep(1000)
 	Send("{ENTER}")
 	Sleep(2000)
 
@@ -150,8 +177,8 @@ Func TestSpeed($url, $dataFilePath )
 	Send("{BACKSPACE}")
 	ConsoleWrite("" & $url & @CRLF)
 	Sleep(200)
-	Send($dataFilePath & "\" & $url)
-	Sleep(2000)
+	Send($recordFilePath)
+	Sleep(1000)
 	Send("{ENTER}")
 	Sleep(3000)
 
@@ -165,7 +192,10 @@ Func TestSpeed($url, $dataFilePath )
 	Send(@ScriptDir & "\wait.htm")
 	Sleep(200)
 	Send("{ENTER}")
-	Sleep(3000)
+	Sleep(200)
+
+
+	Sleep(2000)
 
 	;	$clsList = WinGetClassList($title,"")
 	;	ConsoleWrite("list:" & $clsList & @CRLF)
