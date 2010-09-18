@@ -60,7 +60,7 @@ Func testMain( $workpath, $username, $testplace )
 	; 测试完成，修改文件夹名称
 
 
-	MsgBox(0, "Output", "Finished")
+	MsgBox(0, "Output", "Finished", 10)
 
 EndFunc
 
