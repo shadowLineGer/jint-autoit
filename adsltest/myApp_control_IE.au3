@@ -16,8 +16,18 @@ Func testMain( $workpath, $username, $testplace )
 	EndIf
 	$ret = DirCreate($DATAFILEPATH)
 
+    ; 告诉Server端，测试开始
+	$reqUrl = "http://kuandaiceshi.appspot.com/starttest?username=" & $username _
+			  & "&place=" & $testplace & "&roundno=" & $now
+	prt($reqUrl)
+	;pop($reqUrl)
+	$response = InetRead ( $reqUrl, 1)
+	$ret = BinaryToString($response)
+	prt( $ret )
+
+
     ; 因为测试有时会出错，无法得到数据，故多做几次，做过的不会重复执行
-	For $i=0 To 2
+	For $loopNum=0 To 2
 		; 打开IE
 		OpenIE()
 
@@ -26,12 +36,6 @@ Func testMain( $workpath, $username, $testplace )
 
 		;打开 httpwatch 软件
 		OpenHttpWatch()
-
-		If Not checkAuth() Then
-			MsgBox(0, "Error", "Err00001:Network Error", 10 )
-			Exit
-		EndIf
-
 
 		; 读入待测站点列表
 		$file = FileOpen($SITELISTPATH, 0)
@@ -45,13 +49,12 @@ Func testMain( $workpath, $username, $testplace )
 			If checkUrl($line) Then
 				If Not FileExists($DATAFILEPATH & "\" & $line & ".csv") Then
 					TestSpeed($line, $DATAFILEPATH)
-					TrayTip("TEST IN PROCESS", "Site: " & $line & " Finished!" & @CRLF & "It's " & $i, 2, 1)
-					$i=$i+1
+					TrayTip("TEST IN PROCESS", "Site: " & $line & " test finished!" & @CRLF & "It's " & $i & ".", 2, 1)
 				Else
 					ConsoleWrite($line & ".csv is Exist. Skip! " & @CRLF)
 				EndIf
-
 			EndIf
+			$i=$i+1
 		WEnd
 		FileClose($file)
 
@@ -60,7 +63,12 @@ Func testMain( $workpath, $username, $testplace )
 
 	Next
 
-	; 测试完成，修改文件夹名称
+    ; 告诉Server端，测试完成
+	$reqUrl = "http://kuandaiceshi.appspot.com/endtest"
+	prt($reqUrl)
+	$response = InetRead ( $reqUrl, 1)
+	$ret = BinaryToString($response)
+	prt( $ret )
 
 
 	MsgBox(0, "Output", "Finished", 10)
@@ -195,72 +203,17 @@ EndFunc   ;==>OpenIE
 Func OpenHttpWatch()
 	$title = "[CLASS:IEFrame]"
 	WinMove($title, "", 45, 0)
-	Sleep(1000)
+	Sleep(500)
 	MouseClick("", 60, 200)
 	Sleep(500)
 	Send("+{F2}")
+	Sleep(500)
+	MouseMove(60,10)
+
 EndFunc   ;==>OpenHttpWatch
 
 
 
-Func checkAuth()
-	;获取IP和Mac
-	$ip = @IPAddress1
-	$mac = _GetMAC ($ip)
-
-	;获取硬盘信息和cpu信息
-	$Dll=DllOpen("Getinfo.dll")
-	$diskName = DllCall($Dll,"str","GetDiskIDName","str","DiskName","byte",0)
-	$diskName = StringStripWS($diskName[0],2)
-
-	$diskId=DllCall($Dll,"str","GetDiskIDName","str","DiskId","byte",0)
-	$diskId = StringStripWS($diskId[0],2)
-
-	$cpuId=DllCall($Dll,"str","GetCpuInfo","long",1)
-	$cpuId = StringStripWS($cpuId[0],2)
-	DllClose($Dll)
-
-    ;$reqUrl = "http://localhost:8080/adsl?zero=" & $ip _
-	$reqUrl = "http://qxauth.appspot.com/adsl?zero=" & $ip _
-			  & "&one=" & $mac & "&two=" & $diskName & "&three=" & $diskId & "&four=" & $cpuId
-	prt($reqUrl)
-
-	$hDownload = InetRead ( $reqUrl, 1)
-	$ret = BinaryToString($hDownload)
-	prt( $ret )
-
-	If 'yes' == $ret Then
-		return True
-	Else
-		return False
-	EndIf
-
-EndFunc
-
-
-
-Func _GetMAC ($sIP)
-  Local $MAC,$MACSize
-  Local $i,$s,$r,$iIP
-
-  $MAC = DllStructCreate("byte[6]")
-  $MACSize = DllStructCreate("int")
-
-  DllStructSetData($MACSize,1,6)
-  $r = DllCall ("Ws2_32.dll", "int", "inet_addr", "str", $sIP)
-  $iIP = $r[0]
-  $r = DllCall ("iphlpapi.dll", "int", "SendARP","int", $iIP,"int", 0,"ptr", DllStructGetPtr($MAC),"ptr", DllStructGetPtr($MACSize))
-  $s    = ""
-  For $i = 0 To 5
-      If $i Then $s = $s & ":"
-      $s = $s & Hex(DllStructGetData($MAC,1,$i+1),2)
-  Next
-  Return $s
-EndFunc
-
-Func prt($str)
-	ConsoleWrite( $str & @CRLF )
-EndFunc
 
 
 
