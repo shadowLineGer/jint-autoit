@@ -2,7 +2,7 @@
 
 
 
-Func testMain( $workpath )
+Func testMain( $workpath, $username, $testplace )
 
 	;初始化各种路径
 	$SITELISTPATH = "" & @ScriptDir & "\sitelist.txt"
@@ -10,9 +10,9 @@ Func testMain( $workpath )
 
 	$now = @YEAR & @MON & @MDAY & @HOUR ;& @MIN & @SEC
     if FileExists( $workpath ) Then
-		$DATAFILEPATH = $workpath & "\" & $now
+		$DATAFILEPATH = $workpath & "\" & $now & $testplace
 	else
-		$DATAFILEPATH = @ScriptDir & "\" & $now
+		$DATAFILEPATH = @ScriptDir & "\" & $now & $testplace
 	EndIf
 	$ret = DirCreate($DATAFILEPATH)
 
@@ -53,6 +53,8 @@ Func testMain( $workpath )
 		FileClose($file)
 
 		CloseIE()
+
+
 	Next
 
 	; 测试完成，修改文件夹名称
@@ -97,7 +99,11 @@ Func TestSpeed($url, $dataFilePath )
 
 		$statusText = ControlGetText("[CLASS:IEFrame]", "", "[CLASS:msctls_statusbar32;INSTANCE:1]")
 
-		If StringLen($statusText) == 0 And StringIsSpace($statusText) == 1 Or StringInStr($statusText, "Done") Or StringInStr($statusText, "完成") Then
+		If StringLen($statusText) == 0 Or StringIsSpace($statusText) == 1 _
+			Or StringInStr($statusText, "Done") Or StringInStr($statusText, "完成") _
+			Or StringInStr($statusText, "完毕") _
+			Then
+
 			ConsoleWrite("Status: >>>" & $statusText & "<<<" & @CRLF)
 			$count = $count + 1
 		Else
