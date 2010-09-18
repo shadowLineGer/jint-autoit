@@ -1,12 +1,6 @@
 
-$DATAFILEPATH = "c:\"
 
-if $cmdLine[0] > 0 Then
-	testMain($cmdLine[1])
-Else
-	MsgBox(0,"Error","请指定工作目录",10)
-	testMain($DATAFILEPATH)
-EndIf
+
 
 Func testMain( $workpath )
 
@@ -49,7 +43,7 @@ Func testMain( $workpath )
 			; 如果URL是正确的，进行速度测试
 			If checkUrl($line) Then
 				If Not FileExists($DATAFILEPATH & "\" & $line & ".csv") Then
-					TestSpeed($line)
+					TestSpeed($line, $DATAFILEPATH)
 				Else
 					ConsoleWrite($line & ".csv is Exist. Skip! " & @CRLF)
 				EndIf
@@ -58,9 +52,11 @@ Func testMain( $workpath )
 		WEnd
 		FileClose($file)
 
-		CloseHttpWatch()
 		CloseIE()
 	Next
+
+	; 测试完成，修改文件夹名称
+
 
 	MsgBox(0, "Output", "Finished")
 
@@ -78,7 +74,7 @@ EndFunc   ;==>checkUrl
 
 
 
-Func TestSpeed($url)
+Func TestSpeed($url, $dataFilePath )
 
 	;开始 httpwatch 记录
 	Sleep(500)
@@ -127,7 +123,7 @@ Func TestSpeed($url)
 	Send("{BACKSPACE}")
 	ConsoleWrite("" & $url & @CRLF)
 	Sleep(200)
-	Send($DATAFILEPATH & "\" & $url)
+	Send($dataFilePath & "\" & $url)
 	Sleep(2000)
 	Send("{ENTER}")
 	Sleep(2000)
@@ -137,7 +133,7 @@ Func TestSpeed($url)
 	Send("{BACKSPACE}")
 	ConsoleWrite("" & $url & @CRLF)
 	Sleep(200)
-	Send($DATAFILEPATH & "\" & $url)
+	Send($dataFilePath & "\" & $url)
 	Sleep(2000)
 	Send("{ENTER}")
 	Sleep(3000)
