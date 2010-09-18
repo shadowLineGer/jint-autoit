@@ -14,7 +14,7 @@ Func ProcessPageTestData( $sitelistfilename, $datapath )
 			If StringIsSpace($line) Then ContinueLoop
 
 			If FileExists( $datapath & "\" & $line & ".csv") Then
-				$ret = ReadCSV( $datapath & "\" & $line )
+				$ret = ReadCSV( $datapath & "\" & $line & ".csv" )
 				$calcValue = $calcValue & $ret & @CRLF
 			Else
 				ConsoleWrite( "Error ! " & $line & ".csv is Not Exist. " & @CRLF )
@@ -33,7 +33,7 @@ EndFunc
 
 Func ReadCSV( $filename )
 
-	$file2 = FileOpen( $filename & ".csv" , 0)
+	$file2 = FileOpen( $filename , 0)
 
 	$i = 0
 	$line2 = ""
