@@ -35,6 +35,7 @@ Func testMain( $workpath, $username, $testplace )
 
 		; 读入待测站点列表
 		$file = FileOpen($SITELISTPATH, 0)
+		$i=1
 		While 1
 			$line = FileReadLine($file)
 			If @error = -1 Then ExitLoop
@@ -44,6 +45,8 @@ Func testMain( $workpath, $username, $testplace )
 			If checkUrl($line) Then
 				If Not FileExists($DATAFILEPATH & "\" & $line & ".csv") Then
 					TestSpeed($line, $DATAFILEPATH)
+					TrayTip("TEST IN PROCESS", "Site: " & $line & " Finished!" & @CRLF & "It's " & $i, 2, 1)
+					$i=$i+1
 				Else
 					ConsoleWrite($line & ".csv is Exist. Skip! " & @CRLF)
 				EndIf
