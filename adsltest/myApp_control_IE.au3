@@ -25,17 +25,17 @@ Func testMain( $workpath, $username, $testplace )
 	$ret = BinaryToString($response)
 	prt( $ret )
 
+	; 打开IE
+	OpenIE()
+
+	;打开 httpwatch 软件
+	OpenHttpWatch()
 
     ; 因为测试有时会出错，无法得到数据，故多做几次，做过的不会重复执行
 	For $loopNum=0 To 2
-		; 打开IE
-		OpenIE()
 
 		; 清除IE缓存
 		ClearCache()
-
-		;打开 httpwatch 软件
-		OpenHttpWatch()
 
 		; 读入待测站点列表
 		$file = FileOpen($SITELISTPATH, 0)
@@ -45,7 +45,7 @@ Func testMain( $workpath, $username, $testplace )
 			If @error = -1 Then ExitLoop
 			ConsoleWrite("" & $line & @CRLF)
 
-			; 如果URL是正确的，进行速度测试
+			; 如果URL是正确的，并且不是注释，就进行速度测试
 			If checkUrl($line) Then
 				If Not FileExists($DATAFILEPATH & "\" & $line & ".csv") Then
 					TestSpeed($line, $DATAFILEPATH)
@@ -58,10 +58,9 @@ Func testMain( $workpath, $username, $testplace )
 			$i=$i+1
 		WEnd
 		FileClose($file)
-
-		CloseIE()
-
 	Next
+
+	CloseIE()
 
     ; 告诉Server端，测试完成
 	$reqUrl = "http://kuandaiceshi.appspot.com/endtest"
@@ -105,7 +104,7 @@ EndFunc
 
 
 Func checkUrl($url)
-	If StringLen($url) > 0 Then
+	If StringLen($url) > 0 And StringInStr($url, "#")<>1 Then
 		Return True
 	Else
 		Return False
