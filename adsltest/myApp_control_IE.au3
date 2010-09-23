@@ -120,7 +120,8 @@ Func TestSpeed($url, $dataFilePath )
 	Sleep(500)
 	Send("^{F2}")
 
-	$ret = ControlFocus("[CLASS:IEFrame]", "", "[CLASS:Edit;INSTANCE:1]")
+	;$ret = ControlFocus("[CLASS:IEFrame]", "", "[CLASS:Edit;INSTANCE:1]")
+	Send("{F4}")
 	Sleep(200)
 	Send("{BACKSPACE}")
 	Sleep(200)
@@ -128,7 +129,7 @@ Func TestSpeed($url, $dataFilePath )
 	Sleep(500)
 	Send("{ENTER}")
 
-	;停止 httpwatch 记录
+
 	Sleep(5000)
 	$count = 0
 	$Totalcount = 0
@@ -154,7 +155,7 @@ Func TestSpeed($url, $dataFilePath )
 		EndIf
 
 	WEnd
-
+	;停止 httpwatch 记录
 	Send("^{F3}")
 	Sleep(1000)
 
@@ -168,8 +169,13 @@ Func TestSpeed($url, $dataFilePath )
 	Sleep(200)
 	Send($recordFilePath)
 	Sleep(1000)
+	; 之所以要连续给两个回车，是为了能在发生错误时，点击那个alert框的OK按钮
+	; 但是这样做有一个问题，如果页面自动将焦点设置到某个输入框，按下回车就会自动触发submit事件，
+	; 在没有解决这个问题以前，只好不这么处理了。
 	Send("{ENTER}")
 	Sleep(2000)
+	;Send("{ENTER}")
+	;Sleep(100)
 
 	Send("^+{s}")
 	Sleep(200)
@@ -180,21 +186,24 @@ Func TestSpeed($url, $dataFilePath )
 	Sleep(1000)
 	Send("{ENTER}")
 	Sleep(3000)
+	;Send("{ENTER}")
+	;Sleep(100)
 
 	Send("^{DELETE}")
 
 	Sleep(200)
-	$ret = ControlFocus("[CLASS:IEFrame]", "", "[CLASS:Edit;INSTANCE:1]")
+	;$ret = ControlFocus("[CLASS:IEFrame]", "", "[CLASS:Edit;INSTANCE:1]")
+	Send("{F4}")
 	Sleep(200)
 	Send("{BACKSPACE}")
 	Sleep(200)
 	Send(@ScriptDir & "\wait.htm")
 	Sleep(200)
 	Send("{ENTER}")
-	Sleep(200)
+	;Sleep(100)
+	;Send("{ENTER}")
 
-
-	Sleep(2000)
+	Sleep(1000)
 
 	;	$clsList = WinGetClassList($title,"")
 	;	ConsoleWrite("list:" & $clsList & @CRLF)
@@ -219,6 +228,10 @@ Func OpenIE()
 	If Not ProcessExists("iexplore.exe") Then
 		Run("C:\Program Files\Internet Explorer\iexplore")
 		Sleep(2000)
+		Send("{TAB}")
+		sleep(200)
+		Send("{ENTER}")
+		Sleep(200)
 	EndIf
 EndFunc   ;==>OpenIE
 

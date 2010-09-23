@@ -1,5 +1,7 @@
 #include <Date.au3>
 
+#include "jintutil.au3"
+
 Func ProcessPageTestData( $sitelistfilename, $datapath )
 	$calcValue = ""
 	; 读入站点列表
@@ -9,7 +11,7 @@ Func ProcessPageTestData( $sitelistfilename, $datapath )
 		While 1
 			$line = FileReadLine($file)
 			If @error = -1 Then ExitLoop
-			;ConsoleWrite( $line & @CRLF )
+			;prt( $line & @CRLF )
 
 			If StringIsSpace($line) Then ContinueLoop
 
@@ -17,12 +19,12 @@ Func ProcessPageTestData( $sitelistfilename, $datapath )
 				$ret = ReadCSV( $datapath & "\" & $line & ".csv" )
 				$calcValue = $calcValue & $ret & @CRLF
 			Else
-				ConsoleWrite( "Error ! " & $line & ".csv is Not Exist. " & @CRLF )
+				prt( "Error ! " & $line & ".csv is Not Exist. " )
 			EndIf
 
 		WEnd
 		FileClose($file)
-		ConsoleWrite( $calcValue )
+		prt( $calcValue )
 	Else
 		MsgBox(0, "Output", "sitelist.txt not exist!")
 	EndIf
@@ -74,14 +76,14 @@ Func ReadCSV( $filename )
 		Next
 	EndIf
 
-;~ 	ConsoleWrite( "$indexStarted = " &      $indexStarted )
-;~ 	ConsoleWrite( "$indexTime = " &         $indexTime )
-;~ 	ConsoleWrite( "$indexBlocked = " &      $indexBlocked )
-;~ 	ConsoleWrite( "$indexDNSLookup = " &    $indexDNSLookup )
-;~ 	ConsoleWrite( "$indexConnect = " &      $indexConnect )
-;~ 	ConsoleWrite( "$indexSend = " &         $indexSend )
-;~ 	ConsoleWrite( "$indexWait = " &         $indexWait )
-;~ 	ConsoleWrite( "$indexReceive = " &      $indexReceive )
+;~ 	prt( "$indexStarted = " &      $indexStarted )
+;~ 	prt( "$indexTime = " &         $indexTime )
+;~ 	prt( "$indexBlocked = " &      $indexBlocked )
+;~ 	prt( "$indexDNSLookup = " &    $indexDNSLookup )
+;~ 	prt( "$indexConnect = " &      $indexConnect )
+;~ 	prt( "$indexSend = " &         $indexSend )
+;~ 	prt( "$indexWait = " &         $indexWait )
+;~ 	prt( "$indexReceive = " &      $indexReceive )
 	;FileClose($file2)
 	;Exit
 
@@ -97,7 +99,7 @@ Func ReadCSV( $filename )
 
 		$line2 = FileReadLine($file2)
 		If @error == -1 Then ExitLoop
-		;ConsoleWrite("" & $line & @CRLF )
+		;prt("" & $line & @CRLF )
 
 		$array = StringSplit( $line2, "," )
 
@@ -105,17 +107,17 @@ Func ReadCSV( $filename )
 			$firstStartTime = $array[$indexStarted]
 		ElseIf $array[0] > 0 Then
 			$thisStartTime = $array[$indexStarted]
-			;ConsoleWrite( " StartTime: " & $firstStartTime & " " & $thisStartTime & @CRLF )
+			;prt( " StartTime: " & $firstStartTime & " " & $thisStartTime & @CRLF )
 
 			$thisTime = $array[$indexTime]
 			If $thisTime == "*" Then
-				;ConsoleWrite("********************")
+				;prt("********************")
 				$thisTime = $array[$indexBlocked] + $array[$indexDNSLookup] + $array[$indexConnect] + $array[$indexSend] + $array[$indexWait] + $array[$indexReceive]
-				ConsoleWrite("$array[$indexWait]: " & $array[$indexWait] )
+				prt("$array[$indexWait]: " & $array[$indexWait] )
 			EndIf
 
 			$thisEndTime = SecDiff( $firstStartTime, $thisStartTime ) + $thisTime
-			;ConsoleWrite('@@ Debug(' & @ScriptLineNumber & ') : $thisEndTime = ' & $thisEndTime & @crlf & '>Error code: ' & @error & @crlf) ;### Debug Console
+			;prt('@@ Debug(' & @ScriptLineNumber & ') : $thisEndTime = ' & $thisEndTime & @crlf & '>Error code: ' & @error & @crlf) ;### Debug Console
 
 			If $thisEndTime > $totalTime Then
 				$totalTime = $thisEndTime
@@ -127,7 +129,7 @@ Func ReadCSV( $filename )
 	WEnd
 	FileClose($file2)
 
-	;ConsoleWrite( $filename & " Time: " & $firstStartTime & " " & $thisStartTime & " " & $totalTime & @CRLF )
+	;prt( $filename & " Time: " & $firstStartTime & " " & $thisStartTime & " " & $totalTime & @CRLF )
 	return $totalTime
 
 EndFunc
