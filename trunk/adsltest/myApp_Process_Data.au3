@@ -15,16 +15,18 @@ Func ProcessPageTestData( $sitelistfilename, $datapath )
 
 			If StringIsSpace($line) Then ContinueLoop
 
+			$ret = ""
 			If FileExists( $datapath & "\" & $line & ".csv") Then
 				$ret = ReadCSV( $datapath & "\" & $line & ".csv" )
-				$calcValue = $calcValue & $ret & @CRLF
 			Else
 				prt( "Error ! " & $line & ".csv is Not Exist. " )
+				$ret = "x"
 			EndIf
-
+			prt( $ret & "  " &  $line )
+			$calcValue = $calcValue & $ret & @CRLF
 		WEnd
 		FileClose($file)
-		prt( $calcValue )
+
 	Else
 		MsgBox(0, "Output", "sitelist.txt not exist!")
 	EndIf
@@ -113,7 +115,7 @@ Func ReadCSV( $filename )
 			If $thisTime == "*" Then
 				;prt("********************")
 				$thisTime = $array[$indexBlocked] + $array[$indexDNSLookup] + $array[$indexConnect] + $array[$indexSend] + $array[$indexWait] + $array[$indexReceive]
-				prt("$array[$indexWait]: " & $array[$indexWait] )
+				;prt("$array[$indexWait]: " & $array[$indexWait] )
 			EndIf
 
 			$thisEndTime = SecDiff( $firstStartTime, $thisStartTime ) + $thisTime
