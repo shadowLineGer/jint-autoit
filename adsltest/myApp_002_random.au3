@@ -33,6 +33,7 @@ While 1
 	  WEnd
 
 	  GUICtrlSetData($resultEdit, $strTemp)
+	  ClipPut($strTemp)
 
 
 
