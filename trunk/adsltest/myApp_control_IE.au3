@@ -63,7 +63,7 @@ Func testMain( $workpath, $username, $testplace )
 	CloseIE()
 
     ; 告诉Server端，测试完成
-	$reqUrl = "http://kuandaiceshi.appspot.com/endtest"
+	$reqUrl = "http://kuandaiceshi.appspot.com/endtest?place=" & $testplace & "&roundno=" & $now
 	prt($reqUrl)
 	$response = InetRead ( $reqUrl, 1)
 	$ret = BinaryToString($response)
@@ -129,8 +129,11 @@ Func TestSpeed($url, $dataFilePath )
 	Sleep(500)
 	Send("{ENTER}")
 
-
+	;等待页面装载
 	Sleep(5000)
+	MouseClick("")
+
+
 	$count = 0
 	$Totalcount = 0
 	While 1
@@ -250,7 +253,7 @@ Func OpenHttpWatch()
 	Sleep(500)
 	Send("+{F2}")
 	Sleep(500)
-	MouseMove(60,10)
+	MouseMove(60,600)
 
 EndFunc   ;==>OpenHttpWatch
 

@@ -26,7 +26,6 @@ If $cmdLine[0] > 0 Then
 			$TESTPLACE = $cmdLine[3]
 			If $cmdLine[0] > 3 Then
 				$AUTOSTART = $cmdLine[4]
-
 			EndIf
 		EndIf
 	EndIf
