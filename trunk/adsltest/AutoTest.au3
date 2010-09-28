@@ -16,6 +16,25 @@ $WORKPATH = "c:\adsltest"
 $USERNAME = "Unspecified"
 $TESTPLACE = "Unspecified"
 $AUTOSTART = ""
+$version = 2
+$serverUrl = "http://kuandaiceshi.appspot.com"
+
+; ¼ì²é¸üÐÂ
+$reqUrl = $serverUrl & "/ver"
+$response = InetRead ( $reqUrl, 1)
+$ret = BinaryToString($response)
+$newVersion = Int($ret)
+If $newVersion > $version Then
+	If fileexists(@ScriptDir & "\update.exe ") Then
+		msg("Have a new version, will update.")
+		$ret = Run(@ScriptDir & "\update.exe " & $serverUrl & "/img/update.zip")
+		sleep(1000)
+		Exit
+	Else
+		msg("Have a new version, but update fail.")
+	EndIf
+
+EndIf
 
 
 If $cmdLine[0] > 0 Then

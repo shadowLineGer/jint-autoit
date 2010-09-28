@@ -17,7 +17,7 @@ Func testMain( $workpath, $username, $testplace )
 	$ret = DirCreate($DATAFILEPATH)
 
     ; 告诉Server端，测试开始
-	$reqUrl = "http://kuandaiceshi.appspot.com/starttest?username=" & $username _
+	$reqUrl = $serverUrl & "/starttest?username=" & $username _
 			  & "&place=" & $testplace & "&roundno=" & $now
 	prt($reqUrl)
 	;pop($reqUrl)
@@ -63,7 +63,7 @@ Func testMain( $workpath, $username, $testplace )
 	CloseIE()
 
     ; 告诉Server端，测试完成
-	$reqUrl = "http://kuandaiceshi.appspot.com/endtest?place=" & $testplace & "&roundno=" & $now
+	$reqUrl = $serverUrl & "/endtest?place=" & $testplace & "&roundno=" & $now
 	prt($reqUrl)
 	$response = InetRead ( $reqUrl, 1)
 	$ret = BinaryToString($response)
@@ -89,7 +89,7 @@ Func SaveData($url, $dataFilePath, $testplace, $roundNo)
 		$ret = ReadCSV( $recordFilePath )
 		prt( $ret )
 
-		$reqUrl = "http://kuandaiceshi.appspot.com/savedata?place=" & $testplace _
+		$reqUrl = $serverUrl & "/savedata?place=" & $testplace _
 				  & "&roundno=" & $roundNo & "&url=" & $url & "&testtime=" & $testtime _
 				  & "&loadtime=" & $ret
 		prt($reqUrl)
