@@ -132,6 +132,8 @@ Func ReadCSV( $filename )
 	FileClose($file2)
 
 	;prt( $filename & " Time: " & $firstStartTime & " " & $thisStartTime & " " & $totalTime & @CRLF )
+	If $i<2 Then $totalTime = -1
+
 	return $totalTime
 
 EndFunc

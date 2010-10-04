@@ -2,23 +2,21 @@
 
 
 
-Func testMain( $workpath, $username, $testplace )
+Func testMain( $workpath, $username, $testplace, $roundNo )
 
 	;初始化各种路径
 	$SITELISTPATH = "" & @ScriptDir & "\sitelist.txt"
 
-
-	$now = @YEAR & @MON & @MDAY & @HOUR ;& @MIN & @SEC
     if FileExists( $workpath ) Then
-		$DATAFILEPATH = $workpath & "\" & $now & $testplace
+		$DATAFILEPATH = $workpath & "\" & $roundNo & $testplace
 	else
-		$DATAFILEPATH = @ScriptDir & "\" & $now & $testplace
+		$DATAFILEPATH = @ScriptDir & "\" & $roundNo & $testplace
 	EndIf
 	$ret = DirCreate($DATAFILEPATH)
 
     ; 告诉Server端，测试开始
 	$reqUrl = $serverUrl & "/starttest?username=" & $username _
-			  & "&place=" & $testplace & "&roundno=" & $now
+			  & "&place=" & $testplace & "&roundno=" & $roundNo
 	prt($reqUrl)
 	;pop($reqUrl)
 	$response = InetRead ( $reqUrl, 1)
@@ -50,7 +48,7 @@ Func testMain( $workpath, $username, $testplace )
 				If Not FileExists($DATAFILEPATH & "\" & $line & ".csv") Then
 					TestSpeed($line, $DATAFILEPATH)
 					TrayTip("TEST IN PROCESS", "Site: " & $line & " test finished!" & @CRLF & "It's " & $i & ".", 2, 1)
-					SaveData($line, $DATAFILEPATH, $testplace, $now )
+					SaveData($line, $DATAFILEPATH, $testplace, $roundNo )
 				Else
 					ConsoleWrite($line & ".csv is Exist. Skip! " & @CRLF)
 				EndIf
@@ -63,7 +61,7 @@ Func testMain( $workpath, $username, $testplace )
 	CloseIE()
 
     ; 告诉Server端，测试完成
-	$reqUrl = $serverUrl & "/endtest?place=" & $testplace & "&roundno=" & $now
+	$reqUrl = $serverUrl & "/endtest?place=" & $testplace & "&roundno=" & $roundNo
 	prt($reqUrl)
 	$response = InetRead ( $reqUrl, 1)
 	$ret = BinaryToString($response)
