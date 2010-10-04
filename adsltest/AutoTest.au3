@@ -16,7 +16,7 @@ $WORKPATH = "c:\adsltest"
 $USERNAME = "Unspecified"
 $TESTPLACE = "Unspecified"
 $AUTOSTART = ""
-$version = 2
+$version = 3
 $serverUrl = "http://kuandaiceshi.appspot.com"
 
 ; 检查更新
@@ -67,10 +67,14 @@ $userNameText = GUICtrlCreateInput( $USERNAME, 100, 80, 300, 25 )
 $testPlaceLabel = GUICtrlCreateLabel("测试点名称:", 10, 110, 300, 25 )
 $testPlaceText = GUICtrlCreateInput( $TESTPLACE, 100, 110, 300, 25 )
 
-$testPlaceLabel = GUICtrlCreateLabel("其他参数:", 10, 140, 300, 25 )
-$autoStartLabel = GUICtrlCreateLabel($AUTOSTART, 100, 140, 300, 25 )
+$testRoundNo = @YEAR & @MON & @MDAY & @HOUR ;& @MIN & @SEC
+$testRoundLabel = GUICtrlCreateLabel("测试轮次:", 10, 140, 300, 25 )
+$testRoundText = GUICtrlCreateInput( $testRoundNo, 100, 140, 300, 25 )
 
-$buttonTest = GUICtrlCreateButton("开始测试", 100, 170, 160, 60 )
+$testPlaceLabel = GUICtrlCreateLabel("其他参数:", 10, 170, 300, 25 )
+$autoStartLabel = GUICtrlCreateLabel($AUTOSTART, 100, 170, 300, 25 )
+
+$buttonTest = GUICtrlCreateButton("开始测试", 100, 200, 160, 60 )
 
 $infoLabel = GUICtrlCreateLabel("欢迎使用小区宽带自动测试工具", 10, 280, 300, 20)
 
@@ -94,7 +98,7 @@ EndIf
 If "autostart" == $AUTOSTART Then $autoStartFlag=True
 If $autoStartFlag Then
 	;msg($autoStartFlag)
-	Sleep(5000)
+	Sleep(4000)
 	startTest()
 EndIf
 
@@ -110,8 +114,12 @@ Func startTest()
 
 	setInfo( "即将开始网站访问测试" )
 
+	$WORKPATH = GUICtrlRead($testDataPath)
+	$USERNAME = GUICtrlRead($userNameText)
+	$TESTPLACE = GUICtrlRead($testPlaceText)
+	$ROUNDNO = GUICtrlRead($testRoundText)
 
-	testMain($WORKPATH, $USERNAME, $TESTPLACE )
+	testMain($WORKPATH, $USERNAME, $TESTPLACE, $ROUNDNO )
 
 	If $autoStartFlag Then Exit
 EndFunc
