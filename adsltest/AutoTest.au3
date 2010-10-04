@@ -20,7 +20,7 @@ $version = 3
 $serverUrl = "http://kuandaiceshi.appspot.com"
 
 ; ¼ì²é¸üÐÂ
-$reqUrl = $serverUrl & "/ver"
+$reqUrl = $serverUrl & "/ver?clientver=" & $version
 $response = InetRead ( $reqUrl, 1)
 $ret = BinaryToString($response)
 $newVersion = Int($ret)
