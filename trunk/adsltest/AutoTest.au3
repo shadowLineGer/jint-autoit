@@ -16,7 +16,7 @@ $WORKPATH = "c:\adsltest"
 $USERNAME = "Unspecified"
 $TESTPLACE = "Unspecified"
 $AUTOSTART = ""
-$version = 4
+$version = 5
 $serverUrl = "http://kuandaiceshi.appspot.com"
 
 ; 检查更新
@@ -55,7 +55,7 @@ EndIf
 Opt("GUIOnEventMode", 1)  ; 切换为 OnEvent 模式
 $mainwindow = GUICreate("Auto Test Tool  V" & $version , 500, 300)
 GUISetOnEvent($GUI_EVENT_CLOSE, "CLOSEClicked")
-GUICtrlCreateLabel("小区宽带自动测试工具 V1.0 ", 30, 10)
+GUICtrlCreateLabel("小区宽带自动测试工具  V" & $version, 30, 10)
 
 $testDataLabel = GUICtrlCreateLabel("工作目录:", 10, 50, 300, 25)
 $testDataPath = GUICtrlCreateInput($WORKPATH, 100, 50, 300, 25 )
