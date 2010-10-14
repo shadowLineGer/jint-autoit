@@ -42,3 +42,47 @@ While 1
       ExitLoop
   EndSelect
 WEnd
+
+
+#CS  VBA °æ±¾
+Sub randomData()
+' Macro1 Macro
+' ¨®¨¦ jint ¡À¨¤D¡ä¡ê?¨º¡À??: 2010-10-14
+    Dim flagNum, flag
+    Dim newValue, oldValue As Single
+    Dim strValue As String
+    Dim i, j As Integer
+
+    i = 3
+    While i < 60
+        j = 3
+        While j < 60
+            flagNum = Rnd()
+            If flagNum < 0.5 Then
+                flag = -1
+            Else
+                flag = 1
+            End If
+
+            If IsNumeric(Cells(i, j).Value) Then
+                oldValue = Cells(i, j).Value
+                newValue = (1 + (Rnd() / 10 + 0.03) * flag) * oldValue
+
+                If newValue > 0 Then
+                    strValue = Format(newValue, "0.000")
+                    Cells(i, j).Value = strValue
+                Else
+                    Cells(i, j).Value = ""
+                End If
+            End If
+
+            j = j + 1
+        Wend
+        i = i + 1
+    Wend
+
+End Sub
+ #CE
+
+
+
