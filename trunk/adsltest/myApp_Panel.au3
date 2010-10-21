@@ -18,7 +18,7 @@ $testDataPath = GUICtrlCreateInput("", 100, 260, 300, 25 )
 $buttonTestDataPath = GUICtrlCreateButton("选择", 410, 260, 50, 25 )
 
 $sitelistLabel = GUICtrlCreateLabel("站点列表文件", 10, 290, 300, 25 )
-$sitelistPath = GUICtrlCreateInput( @ScriptDir & "\sitelist.txt", 100, 290, 300, 25 )
+$sitelistPath = GUICtrlCreateInput( @ScriptDir & "\report_topN.txt", 100, 290, 300, 25 )
 $buttonSitelistPath = GUICtrlCreateButton("选择", 410, 290, 50, 25 )
 
 $buttonTest4 = GUICtrlCreateButton("整理网站访问测试数据", 10, 330, 160, 60 )
@@ -74,7 +74,7 @@ Func CLOSEClicked()
 EndFunc
 
 Func pickTestDataPath()
-	$path = FileSelectFolder ("pick path", "", 4, @ScriptDir)
+	$path = FileSelectFolder ("pick path", "", 4, "c:\temp")
 	GUICtrlSetData($testDataPath, $path )
 EndFunc
 

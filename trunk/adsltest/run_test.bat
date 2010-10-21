@@ -1,1 +1,1 @@
-AutoTest.exe C:\宽带测试\1.当前工作\方欣小区 jint.qianxiang 方欣小区
+AutoTest.exe C:\temp jint.qianxiang 丹尼尔小区 noautostart

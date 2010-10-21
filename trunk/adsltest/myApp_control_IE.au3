@@ -115,16 +115,19 @@ EndFunc   ;==>checkUrl
 Func TestSpeed($url, $dataFilePath )
 
 	;开始 httpwatch 记录
-	Sleep(500)
+	Sleep(100)
+	Send("^{DEL}")
+	Sleep(200)
 	Send("^{F2}")
+	Sleep(100)
 
 	;$ret = ControlFocus("[CLASS:IEFrame]", "", "[CLASS:Edit;INSTANCE:1]")
 	Send("{F4}")
-	Sleep(200)
+	Sleep(300)
 	Send("{BACKSPACE}")
-	Sleep(200)
+	Sleep(300)
 	Send("http://" & $url)
-	Sleep(500)
+	Sleep(900)
 	Send("{ENTER}")
 
 	;等待页面装载
