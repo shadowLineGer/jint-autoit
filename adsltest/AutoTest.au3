@@ -16,7 +16,7 @@ $WORKPATH = "c:\adsltest"
 $USERNAME = "Unspecified"
 $TESTPLACE = "Unspecified"
 $AUTOSTART = ""
-$version = 5
+$version = 6
 $serverUrl = "http://kuandaiceshi.appspot.com"
 
 ; ¼ì²é¸üÐÂ
