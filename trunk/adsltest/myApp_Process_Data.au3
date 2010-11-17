@@ -49,6 +49,7 @@ Func ReadCSV( $filename )
 	$indexSend = 0
 	$indexWait = 0
 	$indexReceive = 0
+	$indexUrl = 0
 
 	;读csv文件的第一行，找出需要的字段的位置
 	$line2 = FileReadLine($file2)
@@ -74,6 +75,8 @@ Func ReadCSV( $filename )
 				$indexWait = $i
 			ElseIf $array[$i] == "Receive" Then
 				$indexReceive = $i
+			ElseIf $array[$i] == "URL" Then
+				$indexUrl = $i
 			EndIf
 		Next
 	EndIf

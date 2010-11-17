@@ -1,5 +1,5 @@
 
-
+$TITLE = "[CLASS:IEFrame]"
 
 
 Func testMain( $workpath, $username, $testplace, $roundNo )
@@ -132,7 +132,7 @@ Func TestSpeed($url, $dataFilePath )
 
 	;等待页面装载
 	Sleep(5000)
-	MouseClick("")
+	;MouseClick("")
 
 
 	$count = 0
@@ -152,7 +152,7 @@ Func TestSpeed($url, $dataFilePath )
 				$count = 0
 		EndIf
 
-		If $count > 10 Or $Totalcount > 1050 Then
+		If $count > 10 Or $Totalcount > 1000 Then
 			ExitLoop
 		Else
 			Sleep(100)
@@ -176,8 +176,16 @@ Func TestSpeed($url, $dataFilePath )
 	; 之所以要连续给两个回车，是为了能在发生错误时，点击那个alert框的OK按钮
 	; 但是这样做有一个问题，如果页面自动将焦点设置到某个输入框，按下回车就会自动触发submit事件，
 	; 在没有解决这个问题以前，只好不这么处理了。
+	; 看看能否通过检查是否有“确认另存为”来解决
 	Send("{ENTER}")
 	Sleep(2000)
+	$alertTitle = "确认另存为"
+	If WinActive($alertTitle) Then
+		;msg("OK send Y")
+		send("{y}");
+		Sleep(2000)
+	EndIf
+
 	;Send("{ENTER}")
 	;Sleep(100)
 
@@ -189,9 +197,14 @@ Func TestSpeed($url, $dataFilePath )
 	Send($recordFilePath)
 	Sleep(1000)
 	Send("{ENTER}")
-	Sleep(3000)
+	Sleep(2000)
 	;Send("{ENTER}")
 	;Sleep(100)
+	If WinActive($alertTitle) Then
+		;msg("OK send Y")
+		send("{y}");
+		Sleep(2000)
+	EndIf
 
 	Send("^{DELETE}")
 
@@ -209,15 +222,15 @@ Func TestSpeed($url, $dataFilePath )
 
 	Sleep(1000)
 
-	;	$clsList = WinGetClassList($title,"")
+	;	$clsList = WinGetClassList($TITLE,"")
 	;	ConsoleWrite("list:" & $clsList & @CRLF)
 
 EndFunc   ;==>TestSpeed
 
 Func ClearCache()
 	Sleep(500)
-	$title = "[CLASS:IEFrame]"
-	If Not WinActive($title, "") Then WinActivate($title, "")
+
+	If Not WinActive($TITLE, "") Then WinActivate($TITLE, "")
 	Sleep(500)
 	Send("^+{DEL}")
 	Sleep(500)
@@ -225,7 +238,12 @@ Func ClearCache()
 	$title2 = "Delete Browsing History"
 	WinActivate($title2, "")
 	Send("{d 1}")
-	Sleep(2000)
+	Sleep(1000)
+	WinWaitClose("正在删除")
+	Sleep(500)
+	MouseClick("left")
+	Sleep(500)
+
 EndFunc   ;==>ClearCache
 
 Func OpenIE()
@@ -239,6 +257,11 @@ Func OpenIE()
 		Send("{ENTER}")
 		Sleep(200)
 	EndIf
+
+
+	;WinMove($TITLE, "", 45, 0)
+	WinSetState( $TITLE , "",@SW_MAXIMIZE )
+
 EndFunc   ;==>OpenIE
 
 Func CloseIE()
@@ -249,15 +272,18 @@ Func CloseIE()
 EndFunc   ;==>OpenIE
 
 Func OpenHttpWatch()
-	$title = "[CLASS:IEFrame]"
-	WinMove($title, "", 45, 0)
-	Sleep(500)
-	MouseClick("", 60, 200)
-	Sleep(500)
+	Sleep(400)
+	$pos = WinGetPos($TITLE);
+	$x = $pos[0]+20
+	$y = $pos[1]+$pos[3]-80
+	Sleep(100)
+
+	MouseClick("left", $x, $y )
+	Sleep(300)
 	Send("+{F2}")
 	Sleep(500)
-	MouseMove(60,600)
-
+	MouseClick("left", $x, $y)
+	Sleep(100)
 EndFunc   ;==>OpenHttpWatch
 
 
