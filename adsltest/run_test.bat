@@ -1,1 +1,1 @@
-AutoTest.exe C:\temp jint.qianxiang µ¤Äá¶ûĞ¡Çø noautostart
+AutoTest.exe C:\temp jint.qianxiang ²âÊÔ autostart
