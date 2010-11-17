@@ -2,6 +2,9 @@
 #include <Misc.au3>
 
 #include "jintutil.au3"
+
+$serverUrl = "http://kuandaiceshi.appspot.com"
+
 #include "myApp_Control_IE.au3"
 #include "myApp_Process_Data.au3"
 
@@ -12,29 +15,11 @@ $info = ""
 $autoStartFlag = False
 
 ; 参数包括： 工作目录，用户名，测试点名称
-$WORKPATH = "c:\adsltest"
+$WORKPATH = "C:\temp"
 $USERNAME = "Unspecified"
 $TESTPLACE = "Unspecified"
 $AUTOSTART = ""
 $version = 6
-$serverUrl = "http://kuandaiceshi.appspot.com"
-
-; 检查更新
-$reqUrl = $serverUrl & "/ver?clientver=" & $version
-$response = InetRead ( $reqUrl, 1)
-$ret = BinaryToString($response)
-$newVersion = Int($ret)
-If $newVersion > $version Then
-	If fileexists(@ScriptDir & "\update.exe ") Then
-		msg("Have a new version, will update.")
-		$ret = Run(@ScriptDir & "\update.exe " & $serverUrl & "/img/update.zip")
-		sleep(1000)
-		Exit
-	Else
-		msg("Have a new version, but update fail.")
-	EndIf
-
-EndIf
 
 
 If $cmdLine[0] > 0 Then
@@ -50,6 +35,22 @@ If $cmdLine[0] > 0 Then
 	EndIf
 Else
 	$info = "您可以使用bat文件指定相关参数。"
+EndIf
+
+; 检查更新
+$reqUrl = $serverUrl & "/ver?clientver=" & $version & "&mem=" & $TESTPLACE & "_" & $USERNAME
+$response = InetRead ( $reqUrl, 1)
+$ret = BinaryToString($response)
+$newVersion = Int($ret)
+If $newVersion > $version Then
+	If fileexists(@ScriptDir & "\update.exe ") Then
+		msg("Have a new version, will update.")
+		$ret = Run(@ScriptDir & "\update.exe " & $serverUrl & "/img/update.zip")
+		sleep(1000)
+		Exit
+	Else
+		msg("Have a new version, but update fail.")
+	EndIf
 EndIf
 
 Opt("GUIOnEventMode", 1)  ; 切换为 OnEvent 模式

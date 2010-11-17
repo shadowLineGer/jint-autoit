@@ -30,7 +30,7 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 	OpenHttpWatch()
 
     ; 因为测试有时会出错，无法得到数据，故多做几次，做过的不会重复执行
-	For $loopNum=0 To 2
+	For $loopNum=0 To 3
 
 		; 清除IE缓存
 		ClearCache()
@@ -231,9 +231,11 @@ EndFunc   ;==>ClearCache
 Func OpenIE()
 	If Not ProcessExists("iexplore.exe") Then
 		Run("C:\Program Files\Internet Explorer\iexplore")
-		Sleep(2000)
+		$ieHandle = WinWaitActive("Windows Internet Explorer")
+
+		Sleep(1000)
 		Send("{TAB}")
-		sleep(200)
+		sleep(300)
 		Send("{ENTER}")
 		Sleep(200)
 	EndIf
