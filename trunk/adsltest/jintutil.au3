@@ -34,8 +34,6 @@ Func checkAuth()
 
 EndFunc
 
-
-
 Func _GetMAC ($sIP)
   Local $MAC,$MACSize
   Local $i,$s,$r,$iIP
@@ -63,6 +61,36 @@ Func prt($str)
 	ConsoleWrite( $str & @CRLF )
 EndFunc
 
+; todo 这个以后要改成真的写 log 文件
+Func logging($str)
+	prt($str)
+EndFunc
+
 Func pop($str)
 	TrayTip("Debug", $str, 3, 1)
 EndFunc
+
+; 包装这个函数，主要是为了方便翻墙
+Func getFileByUrl( $url, $localname, $timeout )
+	$ret = 0
+	$handle = InetGet( $url , $localname, 1, 0 )
+	$i = 0
+	Do
+		Sleep(1000)
+		$i = $i +1
+		If $i > $timeout Then
+			logging("Can't download update file! Update fail!")
+			$ret = -1
+			ExitLoop
+		EndIf
+	Until InetGetInfo($handle, 2)    ; Check if the download is complete.
+	Local $nBytes = InetGetInfo($handle, 0)
+	InetClose($handle)   ; Close the handle to release resourcs.
+	return $ret
+EndFunc
+
+
+
+
+
+
