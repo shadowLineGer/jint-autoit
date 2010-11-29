@@ -46,9 +46,11 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 			; 如果URL是正确的，并且不是注释，就进行速度测试
 			If checkUrl($line) Then
 				If Not FileExists($DATAFILEPATH & "\" & $line & ".csv") Then
+					$pingtime = Ping($line,1000)
+
 					TestSpeed($line, $DATAFILEPATH)
 					TrayTip("TEST IN PROCESS", "Site: " & $line & " test finished!" & @CRLF & "It's " & $i & ".", 2, 1)
-					SaveData($line, $DATAFILEPATH, $testplace, $roundNo )
+					SaveData($line, $DATAFILEPATH, $testplace, $roundNo, $pingtime )
 				Else
 					ConsoleWrite($line & ".csv is Exist. Skip! " & @CRLF)
 				EndIf
@@ -72,7 +74,7 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 
 EndFunc
 
-Func SaveData($url, $dataFilePath, $testplace, $roundNo)
+Func SaveData($url, $dataFilePath, $testplace, $roundNo, $pingtime )
 	;计算页面装载时间，并将数据送服务器。
 	$recordFilePath = $dataFilePath & "\" & $url & ".csv"
 	prt( "$recordFilePath: " & $recordFilePath )
@@ -89,7 +91,7 @@ Func SaveData($url, $dataFilePath, $testplace, $roundNo)
 
 		$reqUrl = $serverUrl & "/savedata?place=" & $testplace _
 				  & "&roundno=" & $roundNo & "&url=" & $url & "&testtime=" & $testtime _
-				  & "&loadtime=" & $ret
+				  & "&loadtime=" & $ret & "&pingtime=" & $pingtime
 		prt($reqUrl)
 		$response = InetRead ( $reqUrl, 1)
 		$ret2 = BinaryToString($response)
