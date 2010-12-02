@@ -169,15 +169,13 @@ Func TestSpeed($url, $dataFilePath )
 	; 保存 httpwatch 记录数据
 	$recordFilePath = $dataFilePath & "\" & $url
 	Send("^+{c}")
-	Sleep(200)
+	Sleep(500)
 	Send("{BACKSPACE}")
-	ConsoleWrite("" & $url & @CRLF)
-	Sleep(200)
+	prt("" & $recordFilePath & @CRLF)
+	Sleep(500)
 	Send($recordFilePath)
-	Sleep(1000)
-	; 之所以要连续给两个回车，是为了能在发生错误时，点击那个alert框的OK按钮
-	; 但是这样做有一个问题，如果页面自动将焦点设置到某个输入框，按下回车就会自动触发submit事件，
-	; 在没有解决这个问题以前，只好不这么处理了。
+	Sleep(1500)
+
 	; 看看能否通过检查是否有“确认另存为”来解决
 	Send("{ENTER}")
 	Sleep(2000)
@@ -192,12 +190,12 @@ Func TestSpeed($url, $dataFilePath )
 	;Sleep(100)
 
 	Send("^+{s}")
-	Sleep(200)
+	Sleep(500)
 	Send("{BACKSPACE}")
 	ConsoleWrite("" & $url & @CRLF)
-	Sleep(200)
+	Sleep(500)
 	Send($recordFilePath)
-	Sleep(1000)
+	Sleep(1500)
 	Send("{ENTER}")
 	Sleep(2000)
 	;Send("{ENTER}")
@@ -249,8 +247,13 @@ Func ClearCache()
 EndFunc   ;==>ClearCache
 
 Func OpenIE()
+	If ProcessExists("iexplore.exe") Then
+		ProcessClose("iexplore.exe")
+		Sleep(1000)
+	EndIf
+
 	If Not ProcessExists("iexplore.exe") Then
-		Run("C:\Program Files\Internet Explorer\iexplore")
+		Run("C:\Program Files\Internet Explorer\iexplore.exe")
 		$ieHandle = WinWaitActive("Windows Internet Explorer")
 
 		Sleep(1000)
@@ -274,10 +277,19 @@ Func CloseIE()
 EndFunc   ;==>OpenIE
 
 Func OpenHttpWatch()
+
+	$x = 20
+	$y = 600
+
 	Sleep(400)
 	$pos = WinGetPos($TITLE);
-	$x = $pos[0]+20
-	$y = $pos[1]+$pos[3]-80
+	If $pos==0 Then
+		msg("IE not running.")
+	Else
+		$x = $pos[0]+20
+		$y = $pos[1]+$pos[3]-80
+	EndIf
+
 	Sleep(100)
 
 	MouseClick("left", $x, $y )

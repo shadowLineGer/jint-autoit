@@ -19,7 +19,7 @@ $WORKPATH = "C:\temp"
 $USERNAME = "Unspecified"
 $TESTPLACE = "Unspecified"
 $AUTOSTART = ""
-$version = 8
+$version = 9
 
 
 If $cmdLine[0] > 0 Then
