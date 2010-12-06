@@ -2,6 +2,9 @@
 
 #include "jintutil.au3"
 
+;prt(ReadCSV( "C:\temp\2010120210西北一路社区\ie.sogou.com.csv" ))
+;getFileName("C:\temp\2010120210西北一路社区\ie.sogou.com.csv" )
+
 Func ProcessPageTestData( $sitelistfilename, $datapath )
 	$calcValue = ""
 	; 读入站点列表
@@ -100,7 +103,7 @@ Func ReadCSV( $filename )
 
 	;循环取每一行的数据
 	$i = 0
-	While 1
+	While $i < 2000
 
 		$line2 = FileReadLine($file2)
 		If @error == -1 Then ExitLoop
@@ -128,14 +131,22 @@ Func ReadCSV( $filename )
 				$totalTime = $thisEndTime
 			EndIf
 
+			If $i == 1 Then
+				; 检查数据文件是否正确
+				$datafilename = getFileName($filename)
+				$tmpUrl = $array[$indexUrl]
+				if StringInStr($tmpUrl, $datafilename ) == 0 Then
+					$totalTime = -2
+					$i =2001
+				EndIf
+			EndIf
 		EndIf
 
 		$i = $i + 1
 	WEnd
 	FileClose($file2)
 
-	;prt( $filename & " Time: " & $firstStartTime & " " & $thisStartTime & " " & $totalTime & @CRLF )
-	If $i<4 Then $totalTime = -1
+	If $i<4 and $totalTime <> -2 Then $totalTime = -1
 
 	return $totalTime
 
@@ -150,5 +161,15 @@ Func SecDiff( $date1, $date2 )
 
 EndFunc
 
-
-
+Func getFileName($path)
+	$filename = ""
+	$tmp = StringSplit( $path, "\" )
+	if $tmp[0] > 0 Then
+		$fullname = $tmp[$tmp[0]]
+		if Stringlen( $fullname ) > 4 Then
+			$filename = StringLeft( $fullname, StringLen($fullname)-4)
+		EndIf
+	EndIf
+	;prt( $filename )
+	return $filename
+EndFunc

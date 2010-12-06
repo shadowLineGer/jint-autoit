@@ -2,6 +2,7 @@
 $TITLE = "[CLASS:IEFrame]"
 
 
+
 Func testMain( $workpath, $username, $testplace, $roundNo )
 
 	;初始化各种路径
@@ -82,25 +83,30 @@ Func SaveData($url, $dataFilePath, $testplace, $roundNo, $pingtime )
 
 	If 1 == FileExists( $recordFilePath ) Then
 
-		$filetime = FileGetTime($recordFilePath, 0, 1);
-		prt( $filetime )
-		$testtime = $filetime
+		$testtime = FileGetTime($recordFilePath, 0, 1);
 
 		$ret = ReadCSV( $recordFilePath )
 		prt( $ret )
-
-		$reqUrl = $serverUrl & "/savedata?place=" & $testplace _
-				  & "&roundno=" & $roundNo & "&url=" & $url & "&testtime=" & $testtime _
-				  & "&loadtime=" & $ret & "&pingtime=" & $pingtime
-		prt($reqUrl)
-		$response = InetRead ( $reqUrl, 1)
-		$ret2 = BinaryToString($response)
-		prt( $ret2 )
+		If -2 == $ret Then
+			; 测试数据出错，删除数据文件
+			TrayTip("Warning", "Invalid data file, delete it! " & $recordFilePath, 5, 2 )
+			FileDelete($dataFilePath)
+			FileDelete(csvToHwl($dataFilePath))
+		Else
+			$reqUrl = $serverUrl & "/savedata?place=" & $testplace _
+					  & "&roundno=" & $roundNo & "&url=" & $url & "&testtime=" & $testtime _
+					  & "&loadtime=" & $ret & "&pingtime=" & $pingtime
+			prt($reqUrl)
+			$response = InetRead ( $reqUrl, 1)
+			$ret2 = BinaryToString($response)
+			prt( $ret2 )
+		EndIf
 	Else
 		prt($recordFilePath & " Not Exist!")
 	EndIf
 
 EndFunc
+
 
 
 Func checkUrl($url)
