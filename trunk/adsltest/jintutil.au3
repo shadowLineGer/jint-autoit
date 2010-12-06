@@ -90,7 +90,18 @@ Func getFileByUrl( $url, $localname, $timeout )
 EndFunc
 
 
+Func csvToHwl($path)
+	$l = StringLen($path)
+	If $l > 3  Then
+		$tmp = StringLeft( $path, $l-3 )
+		return $tmp & "hwl"
+	Else
+		Return ""
+	EndIf
+
+EndFunc
 
 
 
 
+;prt( csvToHwl("abc\def\crw.csv"))
