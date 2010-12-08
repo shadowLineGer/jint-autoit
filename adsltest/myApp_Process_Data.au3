@@ -44,18 +44,19 @@ Func ReadCSV( $filename )
 
 	$i = 0
 	$line2 = ""
-	$indexStarted = 0
-	$indexTime = 0
-	$indexBlocked = 0
-	$indexDNSLookup = 0
-	$indexConnect = 0
-	$indexSend = 0
-	$indexWait = 0
-	$indexReceive = 0
-	$indexUrl = 0
+	$indexStarted = -1
+	$indexTime = -1
+	$indexBlocked = -1
+	$indexDNSLookup = -1
+	$indexConnect = -1
+	$indexSend = -1
+	$indexWait = -1
+	$indexReceive = -1
+	$indexUrl = -1
 
 	;读csv文件的第一行，找出需要的字段的位置
 	$line2 = FileReadLine($file2)
+	;prt("$line2="&$line2)
 	If @error == -1 Then
 		MsgBox(0,"Error","Data file is invalid !",3)
 		Exit
@@ -95,8 +96,8 @@ Func ReadCSV( $filename )
 	;FileClose($file2)
 	;Exit
 
-	$firstStartTime = ""  ;第一行数据的开始时间
-	$thisStartTime = ""   ;后面某一行数据的开始时间
+	$firstStartTime = 0.0  ;第一行数据的开始时间
+	$thisStartTime = 0.0   ;后面某一行数据的开始时间
 	$thisTime = 0.0         ;后面某一行数据的持续时间
 	$thisEndTime = 0.0      ;后面某一行数据的完成时间
 	$totalTime = 0.0        ;总计时间
@@ -107,37 +108,54 @@ Func ReadCSV( $filename )
 
 		$line2 = FileReadLine($file2)
 		If @error == -1 Then ExitLoop
-		;prt("" & $line & @CRLF )
+		;prt( $line2 )
 
 		$array = StringSplit( $line2, "," )
 
 		If $i == 0 Then
-			$firstStartTime = $array[$indexStarted]
+			if $indexStarted > 0 Then $firstStartTime = $array[$indexStarted]
 		ElseIf $array[0] > 0 Then
-			$thisStartTime = $array[$indexStarted]
+			if $indexStarted > 0 Then $thisStartTime = $array[$indexStarted]
 			;prt( " StartTime: " & $firstStartTime & " " & $thisStartTime & @CRLF )
 
-			$thisTime = $array[$indexTime]
+			if $indexTime > 0 Then $thisTime = $array[$indexTime]
 			If $thisTime == "*" Then
 				;prt("********************")
-				$thisTime = $array[$indexBlocked] + $array[$indexDNSLookup] + $array[$indexConnect] + $array[$indexSend] + $array[$indexWait] + $array[$indexReceive]
-				;prt("$array[$indexWait]: " & $array[$indexWait] )
+				$tempBlocked = 0
+				$tempDNSLookup = 0
+				$tempConnect = 0
+				$tempSend = 0
+				$tempWait = 0
+				$tempReceive = 0
+
+				If $indexBlocked > 0 Then $tempBlocked = $array[$indexBlocked]
+				If $indexDNSLookup > 0 Then $tempDNSLookup = $array[$indexDNSLookup]
+				If $indexConnect > 0 Then $tempConnect = $array[$indexConnect]
+				If $indexSend > 0 Then $tempSend = $array[$indexSend]
+				If $indexWait > 0 Then $tempWait = $array[$indexWait]
+				If $indexReceive > 0 Then $tempReceive = $array[$indexReceive]
+
+				$thisTime = $tempBlocked + $tempDNSLookup + $tempConnect + $tempSend + $tempWait + $tempReceive
+
 			EndIf
 
 			$thisEndTime = SecDiff( $firstStartTime, $thisStartTime ) + $thisTime
-			;prt('@@ Debug(' & @ScriptLineNumber & ') : $thisEndTime = ' & $thisEndTime & @crlf & '>Error code: ' & @error & @crlf) ;### Debug Console
+			;prt('$firstStartTime = ' & $firstStartTime & '$thisStartTime = ' & $thisStartTime & '$thisTime = ' & $thisTime  ) ;### Debug Console
 
 			If $thisEndTime > $totalTime Then
 				$totalTime = $thisEndTime
 			EndIf
+			;prt($totalTime)
 
 			If $i == 1 Then
 				; 检查数据文件是否正确
 				$datafilename = getFileName($filename)
-				$tmpUrl = $array[$indexUrl]
+				;prt("$indexUrl="&$indexUrl)
+				$tmpUrl = ""
+				If $indexUrl > 0 Then $tmpUrl = $array[$indexUrl]
 				if StringInStr($tmpUrl, $datafilename ) == 0 Then
 					$totalTime = -2
-					$i =2001
+					$i =2001  ; use ExitLoop better
 				EndIf
 			EndIf
 		EndIf
