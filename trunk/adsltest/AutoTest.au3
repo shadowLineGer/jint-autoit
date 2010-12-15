@@ -16,10 +16,10 @@ $autoStartFlag = False
 
 ; 参数包括： 工作目录，用户名，测试点名称
 $WORKPATH = "C:\temp"
-$USERNAME = "Unspecified"
+$USERNAME = "jint.qianxiang"
 $TESTPLACE = "Unspecified"
 $AUTOSTART = ""
-$version = 10
+$version = 11
 
 
 If $cmdLine[0] > 0 Then
