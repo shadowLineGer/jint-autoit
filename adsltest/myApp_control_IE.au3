@@ -90,8 +90,8 @@ Func SaveData($url, $dataFilePath, $testplace, $roundNo, $pingtime )
 		If -2 == $ret Then
 			; 测试数据出错，删除数据文件
 			TrayTip("Warning", "Invalid data file, delete it! " & $recordFilePath, 5, 2 )
-			FileDelete($dataFilePath)
-			FileDelete(csvToHwl($dataFilePath))
+			FileDelete($recordFilePath)
+			FileDelete(csvToHwl($recordFilePath))
 		Else
 			$reqUrl = $serverUrl & "/savedata?place=" & $testplace _
 					  & "&roundno=" & $roundNo & "&url=" & $url & "&testtime=" & $testtime _
