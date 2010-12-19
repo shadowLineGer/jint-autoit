@@ -1,5 +1,20 @@
 #include-once
 
+Func downloadFile( $url, $savePath )
+	$i = 0
+	$ret = InetGet( $url , $savePath, 1, 1 )
+	Do
+		Sleep(2000)
+		$i = $i +1
+		If mod($i,10) == 0 Then
+			prt("time=" & ($i*2))
+		EndIf
+	Until InetGetInfo($ret, 2)    ; Check if the download is complete.
+	Local $nBytes = InetGetInfo($ret, 0)
+	InetClose($ret)   ; Close the handle to release resourcs.
+	;MsgBox(0, "", "Bytes read: " & $nBytes)
+EndFunc
+
 Func checkAuth()
 	;ªÒ»°IP∫ÕMac
 	$ip = @IPAddress1
