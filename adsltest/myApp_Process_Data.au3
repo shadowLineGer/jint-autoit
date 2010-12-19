@@ -1,4 +1,5 @@
 #include <Date.au3>
+#Include <process.au3>
 
 #include "jintutil.au3"
 
@@ -7,6 +8,8 @@
 
 Func ProcessPageTestData( $sitelistfilename, $datapath )
 	$calcValue = ""
+	$fullRecordFilePath = $datapath & "\" & "lodatime.txt"
+	prt($fullRecordFilePath)
 	; 读入站点列表
 	;$sitelistPath =  @ScriptDir & "\" & $sitelistfilename
 	If FileExists( $sitelistfilename ) Then
@@ -19,11 +22,19 @@ Func ProcessPageTestData( $sitelistfilename, $datapath )
 			If StringIsSpace($line) Then ContinueLoop
 
 			$ret = ""
-			If FileExists( $datapath & "\" & $line & ".csv") Then
-				$ret = ReadCSV( $datapath & "\" & $line & ".csv" )
+			$fullFilePath = $datapath & "\" & $line & ".hwl"
+			If FileExists( $fullFilePath ) Then
+				;$ret = ReadCSV( $datapath & "\" & $line & ".csv" )
+				$cmdline2 = "cscript //nologo readhwl.js " & $datapath & " " &  $line
+				$cmdline2 = StringReplace($cmdline2, "\", "\\")
+				;prt($cmdline2)
+				RunWait( $cmdline2, "",@SW_HIDE  )
 			Else
 				prt( "Error ! " & $line & ".csv is Not Exist. " )
 				$ret = "x"
+				$file2 = FileOpen(  $datapath & "\loadtime.txt" , 1)
+				FileWriteLine($file2, "x" & @TAB & $line )
+				FileClose($file2)
 			EndIf
 			prt( $ret & "  " &  $line )
 			$calcValue = $calcValue & $ret & @CRLF
