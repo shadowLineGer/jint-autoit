@@ -59,8 +59,9 @@ EndFunc
 Func processData1()
   ;MsgBox(0, "GUI 事件", "即将开始处理测试数据", 2 )
   $ret = ProcessPageTestData( GUICtrlRead( $sitelistPath ), GUICtrlRead( $testDataPath ) )
-  ClipPut($ret)
-  MsgBox(0, "Ret Value", $ret, 10 )
+  ;ClipPut($ret)
+  ;MsgBox(0, "Ret Value", $ret, 10 )
+  Run( "notepad.exe " & GUICtrlRead( $testDataPath ) & "\loadtime.txt" )
 
 EndFunc
 
