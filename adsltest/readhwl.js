@@ -11,15 +11,20 @@ objArgs   =   WScript.Arguments;
 var control = new ActiveXObject('HttpWatch.Controller');
 var hwlfile = control.OpenLog(workpath+"\\"+url + ".hwl")
 
-var ret = "";
-if ( hwlfile.Pages.Count != 0 )
-{
-    var summary = hwlfile.Pages(0).Entries.Summary;
-    var loadtime = summary.Time ;
+var loadtime = 0; 
+var pageCount = hwlfile.Pages.Count;
+if( pageCount > 0 ) {
+    for (i=0; i < pageCount; i++ )
+    {
+        var summary = hwlfile.Pages(i).Entries.Summary;
+        var loadtime2 = summary.Time ;
+        if( loadtime2 > loadtime ) {
+            loadtime = loadtime2;
+        }
+    }
 }
-
 var fs = WScript.CreateObject("Scripting.FileSystemObject");
 var a = fs.OpenTextFile( workpath + "\\loadtime.txt", 8, true);
-a.WriteLine( loadtime + "\t" + url +"\n");
+a.WriteLine( loadtime + "\t" + url );
 a.Close();
 //WScript.StdIn.ReadLine();
