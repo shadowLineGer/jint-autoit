@@ -19,7 +19,7 @@ $WORKPATH = "C:\temp"
 $USERNAME = "jint.qianxiang"
 $TESTPLACE = "Unspecified"
 $AUTOSTART = ""
-$version = 11
+$version = 14
 
 
 If $cmdLine[0] > 0 Then
@@ -37,12 +37,25 @@ Else
 	$info = "您可以使用bat文件指定相关参数。"
 EndIf
 
-; 检查更新
+; 检查是否有 7zip 的console程序，如果没有，从Server端下载
+If Not FileExists("7za.exe") Then
+	downloadFile( $serverUrl & "/img/7za.bin", @ScriptDir & "\7za.exe" )
+EndIf
+
+; 检查AutoTest.exe的更新
 $reqUrl = $serverUrl & "/ver?clientver=" & $version & "&mem=" & $TESTPLACE & "_" & $USERNAME
 $response = InetRead ( $reqUrl, 1)
 $ret = BinaryToString($response)
 $newVersion = Int($ret)
+prt("$newVersion=" & $ret)
 If $newVersion > $version Then
+	; 首先更新主程序之外的其他文件
+	downloadFile( $serverUrl & "/img/update.7z", @ScriptDir & "\update.7z" )
+	prt("7za.exe x -y update.7z")
+	RunWait("7za.exe x -y update.7z")
+	Sleep(4000)
+
+	; 更新主程序
 	If fileexists(@ScriptDir & "\update.exe ") Then
 		msg("Have a new version, will update.")
 		$ret = Run(@ScriptDir & "\update.exe " & $serverUrl & "/img/update.zip")
