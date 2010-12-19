@@ -36,10 +36,10 @@ EndIf
 $i = 0
 $ret = InetGet( $url ,@ScriptDir & "\update.zip", 1, 1 )
 Do
-    Sleep(1000)
+    Sleep(5000)
 	$i = $i +1
 	If $i > 10 Then
-		msg("Can't download update package! Update fail!")
+		msg("time=" & ($i*2))
 	EndIf
 Until InetGetInfo($ret, 2)    ; Check if the download is complete.
 Local $nBytes = InetGetInfo($ret, 0)
