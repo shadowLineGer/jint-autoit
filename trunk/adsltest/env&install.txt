@@ -3,6 +3,7 @@
 
 安装环境：
 windows XP sp2 （win7不支持）
+杀毒软件，并注册。
 IE 8
 HttpWatch 7.0
 
