@@ -1,4 +1,5 @@
 // 读取hwl文件，获得页面载入时间。
+// 写入loadtime.txt中。
 workpath = ""
 url = ""
 objArgs   =   WScript.Arguments;   
