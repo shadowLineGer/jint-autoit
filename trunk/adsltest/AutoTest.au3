@@ -17,7 +17,7 @@ $autoStartFlag = False
 ; 参数包括： 工作目录，用户名，测试点名称
 $WORKPATH = "C:\temp"
 $USERNAME = "jint.qianxiang"
-$TESTPLACE = "Unspecified"
+$TESTPLACE = "枢纽楼4楼"
 $AUTOSTART = ""
 $version = 14
 

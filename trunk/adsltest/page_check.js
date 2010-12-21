@@ -45,7 +45,8 @@ if ( plugin.Log.Pages.Count != 0 )
 }
 var urlSendData = serverUrl + otherReqStr + "&url=" + url + "&loadtime=" + loadtime ;
 plugin.GotoURL(urlSendData);
-control.Wait(plugin, 20);
+control.Wait(plugin, 5);
+plugin.Stop();
 
 // Close down IE
 plugin.CloseBrowser();
