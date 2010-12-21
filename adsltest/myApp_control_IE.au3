@@ -28,13 +28,16 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 	OpenIE()
 
 	;打开 httpwatch 软件
-	OpenHttpWatch()
+	;OpenHttpWatch()
 
     ; 因为测试有时会出错，无法得到数据，故多做几次，做过的不会重复执行
 	For $loopNum=0 To 3
 
 		; 清除IE缓存
 		ClearCache()
+		sleep(5000)
+
+		CloseIE()
 
 		; 读入待测站点列表
 		$file = FileOpen($SITELISTPATH, 0)
@@ -47,11 +50,13 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 			; 如果URL是正确的，并且不是注释，就进行速度测试
 			If checkUrl($line) Then
 				If Not FileExists($DATAFILEPATH & "\" & $line & ".csv") Then
-					$pingtime = Ping($line,1000)
+					;$pingtime = Ping($line,1000)
 
-					TestSpeed($line, $DATAFILEPATH)
+					;TestSpeed($line, $DATAFILEPATH)
 					TrayTip("TEST IN PROCESS", "Site: " & $line & " test finished!" & @CRLF & "It's " & $i & ".", 2, 1)
-					SaveData($line, $DATAFILEPATH, $testplace, $roundNo, $pingtime )
+					;SaveData($line, $DATAFILEPATH, $testplace, $roundNo, $pingtime )
+					$cmdline2 = "cscript //nologo page_check.js " & $DATAFILEPATH & " " &  $line & " " &  $serverUrl & ' "/savedata?place=枢纽楼4楼&roundno=2010122115&testtime=100"'
+					RunWait( $cmdline2, "",@SW_HIDE  )
 				Else
 					ConsoleWrite($line & ".csv is Exist. Skip! " & @CRLF)
 				EndIf

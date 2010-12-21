@@ -11,3 +11,7 @@
 而对于GAE挂掉，分两种情况，一种是GAE自己挂了，那没办法。
 一种是GFW搞的，那就使用代理接通两边。
 （不知道“反向代理”是否说的就是这种代理）
+
+
+
+cscript //nologo page_check.js c:\temp g.cn http://kuandaiceshi.appspot.com "/savedata?place=枢纽楼4楼&roundno=2010122115&testtime=100&pingtime=10"
