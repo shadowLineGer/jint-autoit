@@ -1,5 +1,7 @@
 #include-once
 
+Global $UID_DISKID = "abc"
+
 Func downloadFile( $url, $savePath )
 	$i = 0
 	$ret = InetGet( $url , $savePath, 1, 1 )
@@ -27,6 +29,7 @@ Func checkAuth()
 
 	$diskId=DllCall($Dll,"str","GetDiskIDName","str","DiskId","byte",0)
 	$diskId = StringStripWS($diskId[0],2)
+	Global $UID_DISKID = $diskId
 
 	$cpuId=DllCall($Dll,"str","GetCpuInfo","long",1)
 	$cpuId = StringStripWS($cpuId[0],2)
@@ -35,13 +38,14 @@ Func checkAuth()
     ;$reqUrl = "http://localhost:8080/adsl?zero=" & $ip _
 	$reqUrl = "http://qxauth.appspot.com/adsl?zero=" & $ip _
 			  & "&one=" & $mac & "&two=" & $diskName & "&three=" & $diskId & "&four=" & $cpuId
-	prt($reqUrl)
+	;prt($reqUrl)
 
 	$hDownload = InetRead ( $reqUrl, 1)
 	$ret = BinaryToString($hDownload)
-	prt( $ret )
+	;prt( $ret )
 
 	If 'yes' == $ret Then
+		;prt("Auth Success")
 		return True
 	Else
 		return False
