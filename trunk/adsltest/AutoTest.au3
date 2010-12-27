@@ -11,15 +11,21 @@ $serverUrl = "http://kuandaiceshi.appspot.com"
 ; 避免重复运行
 _Singleton("SingleAutoTest")
 
+; 检查是否合法的客户端
+If Not checkAuth() Then
+	MsgBox(0, "Error", "Err00001:Network Error", 10 )
+	Exit
+EndIf
+
 $info = ""
 $autoStartFlag = False
 
 ; 参数包括： 工作目录，用户名，测试点名称
 $WORKPATH = "C:\temp"
 $USERNAME = "jint.qianxiang"
-$TESTPLACE = "枢纽楼4楼"
+$TESTPLACE = "金天笔记本"
 $AUTOSTART = ""
-$version = 14
+$version = 20
 
 
 If $cmdLine[0] > 0 Then
@@ -43,7 +49,7 @@ If Not FileExists("7za.exe") Then
 EndIf
 
 ; 检查AutoTest.exe的更新
-$reqUrl = $serverUrl & "/ver?clientver=" & $version & "&mem=" & $TESTPLACE & "_" & $USERNAME
+$reqUrl = $serverUrl & "/ver?clientver=" & $version & "&diskid=" & $UID_DISKID & "&mem=" & $TESTPLACE & "_" & $USERNAME
 $response = InetRead ( $reqUrl, 1)
 $ret = BinaryToString($response)
 $newVersion = Int($ret)
@@ -121,10 +127,7 @@ While 1
 WEnd
 
 Func startTest()
-	If Not checkAuth() Then
-		MsgBox(0, "Error", "Err00001:Network Error", 10 )
-		Exit
-	EndIf
+
 
 	setInfo( "即将开始网站访问测试" )
 

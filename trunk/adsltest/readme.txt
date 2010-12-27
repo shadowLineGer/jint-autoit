@@ -15,3 +15,8 @@
 
 
 cscript //nologo page_check.js c:\temp g.cn http://kuandaiceshi.appspot.com "/savedata?place=枢纽楼4楼&roundno=2010122115&testtime=100&pingtime=10"
+
+cscript //nologo page_check.js C:\temp\2010122700金天笔记本 10086.cn http://kuandaiceshi.appspot.com "/savedata?place=金天笔记本&roundno=2010122700&testtime=100"
+
+
+cscript //nologo readhwl.js C:\temp\2010122617金天笔记本 cpro.baidu.com

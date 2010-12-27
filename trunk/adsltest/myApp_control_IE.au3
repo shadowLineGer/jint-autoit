@@ -49,13 +49,15 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 
 			; 如果URL是正确的，并且不是注释，就进行速度测试
 			If checkUrl($line) Then
-				If Not FileExists($DATAFILEPATH & "\" & $line & ".csv") Then
+				If Not FileExists($DATAFILEPATH & "\" & $line & ".hwl") Then
 					;$pingtime = Ping($line,1000)
 
 					;TestSpeed($line, $DATAFILEPATH)
 					TrayTip("TEST IN PROCESS", "Site: " & $line & " test finished!" & @CRLF & "It's " & $i & ".", 2, 1)
 					;SaveData($line, $DATAFILEPATH, $testplace, $roundNo, $pingtime )
-					$cmdline2 = "cscript //nologo page_check.js " & $DATAFILEPATH & " " &  $line & " " &  $serverUrl & ' "/savedata?place=枢纽楼4楼&roundno=2010122115&testtime=100"'
+					$cmdline2 = "cscript //nologo page_check.js " & $DATAFILEPATH & " " &  $line & " " &  $serverUrl & _
+					            ' "/savedata?place='& $testplace & '&roundno=' & $roundNo & '&testtime=100"'
+					prt($cmdline2)
 					RunWait( $cmdline2, "",@SW_HIDE  )
 				Else
 					ConsoleWrite($line & ".csv is Exist. Skip! " & @CRLF)
