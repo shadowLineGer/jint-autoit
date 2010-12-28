@@ -57,8 +57,9 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 					;SaveData($line, $DATAFILEPATH, $testplace, $roundNo, $pingtime )
 					$cmdline2 = "cscript //nologo page_check.js " & $DATAFILEPATH & " " &  $line & " " &  $serverUrl & _
 					            ' "/savedata?place='& $testplace & '&roundno=' & $roundNo & '&testtime=100"'
-					prt($cmdline2)
+					;prt($cmdline2)
 					RunWait( $cmdline2, "",@SW_HIDE  )
+					CloseIE()
 				Else
 					ConsoleWrite($line & ".csv is Exist. Skip! " & @CRLF)
 				EndIf
