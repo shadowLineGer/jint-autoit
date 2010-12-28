@@ -25,7 +25,7 @@ $WORKPATH = "C:\temp"
 $USERNAME = "jint.qianxiang"
 $TESTPLACE = "金天笔记本"
 $AUTOSTART = ""
-$version = 20
+$version = 21
 
 
 If $cmdLine[0] > 0 Then
