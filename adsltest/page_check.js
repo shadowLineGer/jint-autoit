@@ -25,7 +25,7 @@ plugin.Record();
 
 // Goto to the URL and wait for the page to be loaded
 plugin.GotoURL(url);
-control.Wait(plugin, 120);
+control.Wait(plugin, 100);
 
 // Stop recording HTTP
 plugin.Stop();
