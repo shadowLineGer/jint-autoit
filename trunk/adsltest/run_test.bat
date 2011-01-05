@@ -1,1 +1,1 @@
-AutoTest.exe C:\temp jint.qianxiang ≤‚ ‘ autostart
+AutoTest.exe C:\adsl\data jint.qianxiang ≤‚ ‘ autostart

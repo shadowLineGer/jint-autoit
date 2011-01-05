@@ -120,6 +120,35 @@ Func csvToHwl($path)
 
 EndFunc
 
+Func getFileList( $dir )
+	Dim $ret = ""
+	; 显示指定目录下的所有文件的文件名，注意有返回 "." 和 ".."
+	$search = FileFindFirstFile($dir & "\*.*")
+
+	; 检查搜索是否成功
+	If $search = -1 Then
+		MsgBox(0, "错误", "无任何文件或文件夹与指定的搜索字符串匹配")
+		Exit
+	EndIf
+
+	While 1
+		$file = FileFindNextFile($search)
+		If @error Then ExitLoop
+
+		$ret = $ret & $file & ", "
+	WEnd
+
+	; 关闭搜索句柄
+	FileClose($search)
+
+	return $ret
+
+EndFunc
+
+
+prt(getFileList(@ScriptDir))
+
+
 
 
 

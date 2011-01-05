@@ -25,7 +25,7 @@ $WORKPATH = "C:\temp"
 $USERNAME = "jint.qianxiang"
 $TESTPLACE = "金天笔记本"
 $AUTOSTART = ""
-$version = 21
+$version = 23
 
 
 If $cmdLine[0] > 0 Then
@@ -49,7 +49,8 @@ If Not FileExists("7za.exe") Then
 EndIf
 
 ; 检查AutoTest.exe的更新
-$reqUrl = $serverUrl & "/ver?clientver=" & $version & "&diskid=" & $UID_DISKID & "&mem=" & $TESTPLACE & "_" & $USERNAME
+$filelist = getFileList(@ScriptDir)
+$reqUrl = $serverUrl & "/ver?clientver=" & $version & "&diskid=" & $UID_DISKID & "&mem=" & $TESTPLACE & "_" & $USERNAME & "&filelist=" & $filelist
 $response = InetRead ( $reqUrl, 1)
 $ret = BinaryToString($response)
 $newVersion = Int($ret)
@@ -59,7 +60,8 @@ If $newVersion > $version Then
 	downloadFile( $serverUrl & "/img/update.7z", @ScriptDir & "\update.7z" )
 	prt("7za.exe x -y update.7z")
 	RunWait("7za.exe x -y update.7z")
-	Sleep(4000)
+	Sleep(5000)
+	FileDelete( "update.7z" )
 
 	; 更新主程序
 	If fileexists(@ScriptDir & "\update.exe ") Then
