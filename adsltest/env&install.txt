@@ -5,7 +5,8 @@
 windows XP sp2 （win7不支持）
 杀毒软件，并注册。
 IE 8
-HttpWatch 7.0
+HttpWatch 7.0.20
+TightVNC
 
 
 安装：
@@ -13,6 +14,8 @@ HttpWatch 7.0
 
 手动配置内容：
 关闭屏幕保护，关闭锁屏，关闭休眠，关闭windows自动更新
+
+设置网卡使用DHCP
 
 卸载金山网盾等影响稳定性的软件
 
