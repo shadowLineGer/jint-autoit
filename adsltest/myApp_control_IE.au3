@@ -53,7 +53,7 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 					;$pingtime = Ping($line,1000)
 
 					;TestSpeed($line, $DATAFILEPATH)
-					TrayTip("TEST IN PROCESS", "Site: " & $line & " test finished!" & @CRLF & "It's " & $i & ".", 2, 1)
+					TrayTip("TEST IN PROCESS", "Site: " & $line & " test Start!" & @CRLF & "It's " & $i & ".", 2, 1)
 					;SaveData($line, $DATAFILEPATH, $testplace, $roundNo, $pingtime )
 					$cmdline2 = "cscript //nologo page_check.js " & $DATAFILEPATH & " " &  $line & " " &  $serverUrl & _
 					            ' "/savedata?place='& $testplace & '&roundno=' & $roundNo & '&testtime=100"'
