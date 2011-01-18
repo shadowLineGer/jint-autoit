@@ -17,6 +17,19 @@ Func downloadFile( $url, $savePath )
 	;MsgBox(0, "", "Bytes read: " & $nBytes)
 EndFunc
 
+Func checkServer($testUrl)
+	$hDownload = InetRead ( $testUrl & "/status", 1)
+	$ret = BinaryToString($hDownload)
+	prt($testUrl & " " & $ret)
+
+	If 'ok' == $ret Then
+		$serverUrl = $testUrl
+		return True
+	Else
+		return False
+	EndIf
+EndFunc
+
 Func checkAuth()
 	;ªÒ»°IP∫ÕMac
 	$ip = @IPAddress1
@@ -35,10 +48,18 @@ Func checkAuth()
 	$cpuId = StringStripWS($cpuId[0],2)
 	DllClose($Dll)
 
-    ;$reqUrl = "http://localhost:8080/adsl?zero=" & $ip _
-	$reqUrl = "http://qxauth.appspot.com/adsl?zero=" & $ip _
+	;$reqUrl = "http://localhost:8080/adsl?zero=" & $ip _
+	;http://qxauth.appspot.com/adsl
+	$authUrl = ""
+	If checkServer($GaeUrl) Then
+		$authUrl = $GaeAuthUrl & "/adsl"
+	ElseIf checkServer($AwsUrl) Then
+		$authUrl = $AwsUrl & "/adsl"
+	EndIf
+
+	$reqUrl = $authUrl & "?zero=" & $ip _
 			  & "&one=" & $mac & "&two=" & $diskName & "&three=" & $diskId & "&four=" & $cpuId
-	;prt($reqUrl)
+	prt($reqUrl)
 
 	$hDownload = InetRead ( $reqUrl, 1)
 	$ret = BinaryToString($hDownload)
@@ -146,10 +167,5 @@ Func getFileList( $dir )
 EndFunc
 
 
-prt(getFileList(@ScriptDir))
-
-
-
-
-
+;prt(getFileList(@ScriptDir))
 ;prt( csvToHwl("abc\def\crw.csv"))
