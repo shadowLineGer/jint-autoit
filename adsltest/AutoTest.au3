@@ -1,9 +1,12 @@
 #include <GUIConstants.au3>
 #include <Misc.au3>
 
-#include "jintutil.au3"
+Global $serverUrl = ""
+Global $GaeUrl = "http://kuandaiceshi.appspot.com"
+Global $GaeAuthUrl = "http://qxauth.appspot.com"
+Global $AwsUrl = "http://ec2-184-73-93-85.compute-1.amazonaws.com"
 
-$serverUrl = "http://kuandaiceshi.appspot.com"
+#include "jintutil.au3"
 
 #include "myApp_Control_IE.au3"
 #include "myApp_Process_Data.au3"
@@ -21,11 +24,11 @@ $info = ""
 $autoStartFlag = False
 
 ; 参数包括： 工作目录，用户名，测试点名称
-$WORKPATH = "C:\temp"
+$WORKPATH = "C:\adsl"
 $USERNAME = "jint.qianxiang"
-$TESTPLACE = "金天笔记本"
+$TESTPLACE = "testPlace"
 $AUTOSTART = ""
-$version = 23
+$version = 26
 
 
 If $cmdLine[0] > 0 Then

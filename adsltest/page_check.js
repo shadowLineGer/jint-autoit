@@ -21,6 +21,7 @@ var plugin = control.IE.New();
 
 // Start Recording HTTP traffic
 plugin.Log.EnableFilter(false);
+plugin.clear();
 plugin.Record();
 
 // Goto to the URL and wait for the page to be loaded
@@ -61,6 +62,7 @@ if ( pageCount > 0 )
                 + "&received=" + bytesReceived
                 + "&rescount=" + resCount 
                 + "&errorcount=" + errorCount ;
+    //urlSendData = encodeURIComponent(urlSendData);
     plugin.GotoURL(urlSendData);
     control.Wait(plugin, 5);
 }

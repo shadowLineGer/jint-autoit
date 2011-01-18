@@ -25,7 +25,7 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 	prt( $ret )
 
 	; 打开IE
-	OpenIE()
+	;OpenIE()
 
 	;打开 httpwatch 软件
 	;OpenHttpWatch()
@@ -34,8 +34,8 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 	For $loopNum=0 To 3
 
 		; 清除IE缓存
-		ClearCache()
-		sleep(5000)
+		;ClearCache()
+		sleep(4000)
 
 		CloseIE()
 
@@ -69,7 +69,7 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 		FileClose($file)
 	Next
 
-	CloseIE()
+	;CloseIE()
 
     ; 告诉Server端，测试完成
 	$reqUrl = $serverUrl & "/endtest?place=" & $testplace & "&roundno=" & $roundNo
