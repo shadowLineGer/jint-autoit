@@ -1,6 +1,11 @@
 #include-once
 
 Global $UID_DISKID = "abc"
+Global $serverUrl = ""
+Global $GaeUrl = "http://kuandaiceshi.appspot.com"
+Global $GaeAuthUrl = "http://qxauth.appspot.com"
+Global $AwsUrl = "http://ec2-184-73-93-85.compute-1.amazonaws.com"
+
 
 Func downloadFile( $url, $savePath )
 	$i = 0
@@ -94,7 +99,7 @@ Func _GetMAC ($sIP)
 EndFunc
 
 Func msg( $str )
-	MsgBox(0, "Debug", $str, 5 )
+	MsgBox(0, "Debug", $str, 15 )
 EndFunc
 
 Func prt($str)
