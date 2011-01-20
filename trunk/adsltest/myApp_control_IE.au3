@@ -34,9 +34,9 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 	For $loopNum=0 To 3
 
 		; 清除IE缓存
-		;ClearCache()
-		sleep(4000)
-
+		OpenIE()
+		ClearCache()
+		sleep(5000)
 		CloseIE()
 
 		; 读入待测站点列表
@@ -68,8 +68,6 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 		WEnd
 		FileClose($file)
 	Next
-
-	;CloseIE()
 
     ; 告诉Server端，测试完成
 	$reqUrl = $serverUrl & "/endtest?place=" & $testplace & "&roundno=" & $roundNo

@@ -1,10 +1,6 @@
 #include <GUIConstants.au3>
 #include <Misc.au3>
 
-Global $serverUrl = ""
-Global $GaeUrl = "http://kuandaiceshi.appspot.com"
-Global $GaeAuthUrl = "http://qxauth.appspot.com"
-Global $AwsUrl = "http://ec2-184-73-93-85.compute-1.amazonaws.com"
 
 #include "jintutil.au3"
 
