@@ -2,6 +2,7 @@
 #include "jintutil.au3"
 $serverUrl = ""
 
+
 ;HttpSetProxy( 0, "127.0.0.1:7777")
 
 If checkServer($GaeUrl) Then
@@ -109,6 +110,8 @@ WEnd
 FileClose($file)
 
 MsgBox(0, "Output", "“—ÕÍ≥…IP≤‚ ‘", 20)
+
+RunWait(@ComSpec & " /c rasdial /disconnect", "", 0) ;
 
 
 Func getYYS($ip, $domain)
