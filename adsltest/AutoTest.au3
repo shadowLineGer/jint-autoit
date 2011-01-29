@@ -24,7 +24,7 @@ $WORKPATH = "C:\adsl"
 $USERNAME = "jint.qianxiang"
 $TESTPLACE = "testPlace"
 $AUTOSTART = ""
-$version = 26
+$version = 27
 
 
 If $cmdLine[0] > 0 Then

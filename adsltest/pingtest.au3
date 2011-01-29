@@ -10,7 +10,7 @@ ElseIf checkServer($AwsUrl) Then
 	$serverUrl = $AwsUrl
 EndIf
 
-$place = "铁通对比学林雅苑"
+$place = "test"
 If $cmdLine[0] > 0 Then
 	$place = $cmdLine[1]
 EndIf
