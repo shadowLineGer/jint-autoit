@@ -171,6 +171,33 @@ Func getFileList( $dir )
 
 EndFunc
 
+Func OpenAdsl()
+	$adslName = "cmcc"
+	;$adslUser = "290244911"
+	;$adslPwd = "737420"
+	$adslUser = "xa00000000000"
+	$adslPwd = "cmcc123"
+	$ret = RunWait(@ComSpec & " /c rasdial " & $adslName & " " & $adslUser & " " & $adslPwd,"", 0);
+	;msg("RunWait Return: " & $ret)
+EndFunc
+
+Func CloseAdsl()
+	$adslName = "cmcc"
+	$adslUser = "290244911"
+	$adslPwd = "737420"
+	RunWait(@ComSpec & " /c rasdial /disconnect", "", 0);
+EndFunc
+
+Func NetAlive()
+	$var = Ping ("211.137.130.19",3000)
+	If $var > 0 Then
+		Sleep(100)
+		return True
+	Else
+		Return False
+	EndIf
+EndFunc
+
 
 ;prt(getFileList(@ScriptDir))
 ;prt( csvToHwl("abc\def\crw.csv"))

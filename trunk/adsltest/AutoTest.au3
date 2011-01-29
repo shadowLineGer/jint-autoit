@@ -10,10 +10,9 @@
 ; 避免重复运行
 _Singleton("SingleAutoTest")
 
-; 检查是否合法的客户端
-If Not checkAuth() Then
-	MsgBox(0, "Error", "Err00001:Network Error", 10 )
-	Exit
+If Not ProcessExists("qx_manager.exe") Then
+	Run( @ScriptDir & "\qx_manager.exe")
+	sleep(5000)
 EndIf
 
 $info = ""
@@ -128,7 +127,11 @@ While 1
 WEnd
 
 Func startTest()
-
+	; 检查是否合法的客户端
+	If Not checkAuth() Then
+		MsgBox(0, "Error", "Err00001:Network Error", 10 )
+		Exit
+	EndIf
 
 	setInfo( "即将开始网站访问测试" )
 
