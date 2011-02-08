@@ -1,20 +1,13 @@
-
 #include "jintutil.au3"
-$serverUrl = ""
 
-
-;HttpSetProxy( 0, "127.0.0.1:7777")
-
-If checkServer($GaeUrl) Then
-	$serverUrl = $GaeUrl
-ElseIf checkServer($AwsUrl) Then
-	$serverUrl = $AwsUrl
-EndIf
+prt( @ScriptName & " start.")
 
 $place = "test"
 If $cmdLine[0] > 0 Then
 	$place = $cmdLine[1]
 EndIf
+
+checkManager()
 
 $pingfile = "pingrecord.txt"
 If FileExists($pingfile) Then
