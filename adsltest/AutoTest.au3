@@ -10,10 +10,13 @@
 ; 避免重复运行
 _Singleton("SingleAutoTest")
 
-If Not ProcessExists("qx_manager.exe") Then
-	Run( @ScriptDir & "\qx_manager.exe")
-	sleep(5000)
-EndIf
+prt(@ScriptName & " start.")
+
+; 检查哪个Server是可以使用的
+checkServer()
+
+; 如果管理员进程没有启动，启动之
+checkManager()
 
 $info = ""
 $autoStartFlag = False
@@ -23,7 +26,7 @@ $WORKPATH = "C:\adsl"
 $USERNAME = "jint.qianxiang"
 $TESTPLACE = "testPlace"
 $AUTOSTART = ""
-$version = 27
+$version = 28
 
 
 If $cmdLine[0] > 0 Then

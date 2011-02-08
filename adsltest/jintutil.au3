@@ -1,5 +1,8 @@
 #include-once
 
+#include <Array.au3>
+
+
 Global $UID_DISKID = "abc"
 Global $serverUrl = ""
 Global $GaeUrl = "http://kuandaiceshi.appspot.com"
@@ -22,10 +25,20 @@ Func downloadFile( $url, $savePath )
 	;MsgBox(0, "", "Bytes read: " & $nBytes)
 EndFunc
 
-Func checkServer($testUrl)
+Func checkServer()
+	;$reqUrl = "http://localhost:8080/adsl?zero=" & $ip _
+	;http://qxauth.appspot.com/adsl
+	If checkServerStatus($GaeUrl) Then
+		prt($GaeUrl & " is accessible.")
+	ElseIf checkServerStatus($AwsUrl) Then
+		prt($AwsUrl & " is accessible.")
+	EndIf
+EndFunc
+
+Func checkServerStatus($testUrl)
 	$hDownload = InetRead ( $testUrl & "/status", 1)
 	$ret = BinaryToString($hDownload)
-	prt($testUrl & " " & $ret)
+	;prt($testUrl & " " & $ret)
 
 	If 'ok' == $ret Then
 		$serverUrl = $testUrl
@@ -53,14 +66,8 @@ Func checkAuth()
 	$cpuId = StringStripWS($cpuId[0],2)
 	DllClose($Dll)
 
-	;$reqUrl = "http://localhost:8080/adsl?zero=" & $ip _
-	;http://qxauth.appspot.com/adsl
-	$authUrl = ""
-	If checkServer($GaeUrl) Then
-		$authUrl = $GaeAuthUrl & "/adsl"
-	ElseIf checkServer($AwsUrl) Then
-		$authUrl = $AwsUrl & "/adsl"
-	EndIf
+
+	$authUrl = $ServerUrl & "/adsl"
 
 	$reqUrl = $authUrl & "?zero=" & $ip _
 			  & "&one=" & $mac & "&two=" & $diskName & "&three=" & $diskId & "&four=" & $cpuId
@@ -103,36 +110,40 @@ Func msg( $str )
 EndFunc
 
 Func prt($str)
-	ConsoleWrite( $str & @CRLF )
+	if @compiled == 1 Then
+		logging($str)
+	else
+		ConsoleWrite( $str & @CRLF )
+	EndIf
 EndFunc
 
-; todo 这个以后要改成真的写 log 文件
+; 写 log 文件
 Func logging($str)
-	prt($str)
+	FileWriteLine(@ScriptDir & "\log.log", getCurrTime() & " " & $str)
 EndFunc
 
 Func pop($str)
 	TrayTip("Debug", $str, 3, 1)
 EndFunc
 
-; 包装这个函数，主要是为了方便翻墙
-Func getFileByUrl( $url, $localname, $timeout )
-	$ret = 0
-	$handle = InetGet( $url , $localname, 1, 0 )
-	$i = 0
-	Do
-		Sleep(1000)
-		$i = $i +1
-		If $i > $timeout Then
-			logging("Can't download update file! Update fail!")
-			$ret = -1
-			ExitLoop
-		EndIf
-	Until InetGetInfo($handle, 2)    ; Check if the download is complete.
-	Local $nBytes = InetGetInfo($handle, 0)
-	InetClose($handle)   ; Close the handle to release resourcs.
-	return $ret
-EndFunc
+; 包装这个函数，主要是为了方便翻墙  现在看来这个也没什么用了
+;Func getFileByUrl( $url, $localname, $timeout )
+;	$ret = 0
+;	$handle = InetGet( $url , $localname, 1, 0 )
+;	$i = 0
+;	Do
+;		Sleep(1000)
+;		$i = $i +1
+;		If $i > $timeout Then
+;			logging("Can't download update file! Update fail!")
+;			$ret = -1
+;			ExitLoop
+;		EndIf
+;	Until InetGetInfo($handle, 2)    ; Check if the download is complete.
+;	Local $nBytes = InetGetInfo($handle, 0)
+;	InetClose($handle)   ; Close the handle to release resourcs.
+;	return $ret
+;EndFunc
 
 
 Func csvToHwl($path)
@@ -175,10 +186,31 @@ Func OpenAdsl()
 	$adslName = "cmcc"
 	;$adslUser = "290244911"
 	;$adslPwd = "737420"
-	$adslUser = "xa00000000000"
-	$adslPwd = "cmcc123"
-	$ret = RunWait(@ComSpec & " /c rasdial " & $adslName & " " & $adslUser & " " & $adslPwd,"", 0);
-	;msg("RunWait Return: " & $ret)
+	$adslUser = _ArrayCreate("yxal886677", "yxal765645", "xa00000000000", "yxal881430", "290244911")
+	$adslPwd = _ArrayCreate("cmcc123", "cmcc123", "780523", "cmcc123", "737420" )
+
+	$i = 0
+	$ret = False
+	While $i < UBound($adslUser)
+		If Not NetAlive() Then
+			$dialRet = RunWait(@ComSpec & " /c rasdial " & $adslName & " " & $adslUser[$i] & " " & $adslPwd[$i],"", 0)
+			prt("RunWait Return: " & $dialRet)
+			If $dialRet == 0 Then
+				prt("Dial " & $adslUser[$i] & "Success.")
+				$ret = True
+				ExitLoop
+			EndIf
+		Else
+			prt("Net Alive.")
+			$ret = True
+			ExitLoop
+		EndIf
+		$i = $i+1
+	WEnd
+
+	return $ret
+
+
 EndFunc
 
 Func CloseAdsl()
@@ -189,15 +221,45 @@ Func CloseAdsl()
 EndFunc
 
 Func NetAlive()
-	$var = Ping ("211.137.130.19",3000)
-	If $var > 0 Then
+	If Ping ("www.qq.com",3000) > 0 Then     ; ping这一个应该就够了。
 		Sleep(100)
 		return True
 	Else
+		prt("NetAlive: False")
 		Return False
+	EndIf
+
+;~ 	If Ping ("211.137.130.19",3000) > 0 Then     ; 移动的DNS
+;~ 		Sleep(100)
+;~ 		return True
+;~ 	ElseIf Ping ("218.30.19.40",3000) > 0 Then    ; 电信的DNS
+;~ 		Sleep(100)
+;~ 		return True
+;~ 	ElseIf Ping ("211.98.2.4",3000) > 0 Then    ; 铁通的DNS
+;~ 		Sleep(100)
+;~ 		return True
+;~ 	Else
+;~ 		prt("NetAlive: False")
+;~ 		Return False
+;~ 	EndIf
+EndFunc
+
+Func checkManager()
+	If Not ProcessExists("qx_manager.exe") Then
+		Run( @ScriptDir & "\qx_manager.exe")
+		sleep(5000)
 	EndIf
 EndFunc
 
+Func getCurrTime()
+	$time = @YEAR & @MON & @MDAY & " " & @HOUR & ":" & @MIN & ":" & @SEC
+	return $time
+EndFunc
 
-;prt(getFileList(@ScriptDir))
-;prt( csvToHwl("abc\def\crw.csv"))
+
+prt(Ping ("211.137.130.19",3000))
+prt( @error)
+
+
+
+
