@@ -12,17 +12,17 @@ _Singleton("SingleAutoTest")
 
 prt(@ScriptName & " start.")
 
-; 检查哪个Server是可以使用的
-checkServer()
-
 ; 如果管理员进程没有启动，启动之
 checkManager()
+
+; 检查哪个Server是可以使用的
+checkServer()
 
 $info = ""
 $autoStartFlag = False
 
 ; 参数包括： 工作目录，用户名，测试点名称
-$WORKPATH = "C:\adsl"
+$WORKPATH = @ScriptDir & "\data"
 $USERNAME = "jint.qianxiang"
 $TESTPLACE = "testPlace"
 $AUTOSTART = ""
@@ -52,6 +52,7 @@ EndIf
 ; 检查AutoTest.exe的更新
 $filelist = getFileList(@ScriptDir)
 $reqUrl = $serverUrl & "/ver?clientver=" & $version & "&diskid=" & $UID_DISKID & "&mem=" & $TESTPLACE & "_" & $USERNAME & "&filelist=" & $filelist
+prt($reqUrl)
 $response = InetRead ( $reqUrl, 1)
 $ret = BinaryToString($response)
 $newVersion = Int($ret)

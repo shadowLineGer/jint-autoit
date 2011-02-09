@@ -26,29 +26,33 @@ Func downloadFile( $url, $savePath )
 EndFunc
 
 Func checkServer()
-	;$reqUrl = "http://localhost:8080/adsl?zero=" & $ip _
-	;http://qxauth.appspot.com/adsl
 	If checkServerStatus($GaeUrl) Then
-		prt($GaeUrl & " is accessible.")
+		sleep(10)
 	ElseIf checkServerStatus($AwsUrl) Then
-		prt($AwsUrl & " is accessible.")
+		sleep(10)
 	EndIf
 EndFunc
 
 Func checkServerStatus($testUrl)
-	$hDownload = InetRead ( $testUrl & "/status", 1)
+	$tempUrl =  $testUrl & "/status"
+	$hDownload = InetRead ($tempUrl, 1)
 	$ret = BinaryToString($hDownload)
-	;prt($testUrl & " " & $ret)
 
 	If 'ok' == $ret Then
 		$serverUrl = $testUrl
+		prt($tempUrl & " is accessible.")
 		return True
 	Else
+		prt($tempUrl & " is NOT accessible.")
 		return False
 	EndIf
 EndFunc
 
 Func checkAuth()
+	If Not StringInStr($serverUrl, "appspot.com" ) Then
+		Return True
+	EndIf
+
 	;获取IP和Mac
 	$ip = @IPAddress1
 	$mac = _GetMAC ($ip)
@@ -66,10 +70,7 @@ Func checkAuth()
 	$cpuId = StringStripWS($cpuId[0],2)
 	DllClose($Dll)
 
-
-	$authUrl = $ServerUrl & "/adsl"
-
-	$reqUrl = $authUrl & "?zero=" & $ip _
+	$reqUrl = $GaeAuthUrl & "/adsl?zero=" & $ip _
 			  & "&one=" & $mac & "&two=" & $diskName & "&three=" & $diskId & "&four=" & $cpuId
 	prt($reqUrl)
 
@@ -111,15 +112,10 @@ EndFunc
 
 Func prt($str)
 	if @compiled == 1 Then
-		logging($str)
+		FileWriteLine(@ScriptDir & "\log.log", getCurrTime() & " " & $str)
 	else
-		ConsoleWrite( $str & @CRLF )
+		ConsoleWrite( getCurrTime() & " " & $str & @CRLF )
 	EndIf
-EndFunc
-
-; 写 log 文件
-Func logging($str)
-	FileWriteLine(@ScriptDir & "\log.log", getCurrTime() & " " & $str)
 EndFunc
 
 Func pop($str)
@@ -246,8 +242,12 @@ EndFunc
 
 Func checkManager()
 	If Not ProcessExists("qx_manager.exe") Then
-		Run( @ScriptDir & "\qx_manager.exe")
-		sleep(5000)
+		If FileExists( @ScriptDir & "\qx_manager.exe" ) Then
+			Run( @ScriptDir & "\qx_manager.exe")
+			sleep(5000)
+		Else
+			prt("Not found qx_manager.exe.")
+		EndIf
 	EndIf
 EndFunc
 
@@ -257,8 +257,8 @@ Func getCurrTime()
 EndFunc
 
 
-prt(Ping ("211.137.130.19",3000))
-prt( @error)
+;prt(Ping ("211.137.130.19",3000))
+;prt( @error)
 
 
 
