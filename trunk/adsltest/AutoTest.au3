@@ -34,7 +34,7 @@ $WORKPATH = @ScriptDir & "\data"
 $USERNAME = "jint.qianxiang"
 $TESTPLACE = "testPlace"
 $AUTOSTART = ""
-$version = 29
+$version = 30
 
 
 If $cmdLine[0] > 0 Then
