@@ -16,12 +16,10 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 	$ret = DirCreate($DATAFILEPATH)
 
     ; 告诉Server端，测试开始
-	$reqUrl = $serverUrl & "/starttest?username=" & $username _
+	$reqUrl = $SERVER_URL & "/starttest?username=" & $username _
 			  & "&place=" & $testplace & "&roundno=" & $roundNo
 	prt($reqUrl)
-	;pop($reqUrl)
-	$response = InetRead ( $reqUrl, 1)
-	$ret = BinaryToString($response)
+	$ret = sendReq($reqUrl)
 	prt( $ret )
 
 	; 打开IE
@@ -55,7 +53,7 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 					;TestSpeed($line, $DATAFILEPATH)
 					TrayTip("TEST IN PROCESS", "Site: " & $line & " test Start!" & @CRLF & "It's " & $i & ".", 2, 1)
 					;SaveData($line, $DATAFILEPATH, $testplace, $roundNo, $pingtime )
-					$cmdline2 = "cscript //nologo page_check.js " & $DATAFILEPATH & " " &  $line & " " &  $serverUrl & _
+					$cmdline2 = "cscript //nologo page_check.js " & $DATAFILEPATH & " " &  $line & " " &  $SERVER_URL & _
 					            ' "/savedata?place='& $testplace & '&roundno=' & $roundNo & '&testtime=100"'
 					;prt($cmdline2)
 					RunWait( $cmdline2, "",@SW_HIDE  )
@@ -70,10 +68,9 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 	Next
 
     ; 告诉Server端，测试完成
-	$reqUrl = $serverUrl & "/endtest?place=" & $testplace & "&roundno=" & $roundNo
+	$reqUrl = $SERVER_URL & "/endtest?place=" & $testplace & "&roundno=" & $roundNo
 	prt($reqUrl)
-	$response = InetRead ( $reqUrl, 1)
-	$ret = BinaryToString($response)
+	$ret = sendReq($reqUrl)
 	prt( $ret )
 
 
@@ -91,20 +88,19 @@ Func SaveData($url, $dataFilePath, $testplace, $roundNo, $pingtime )
 
 		$testtime = FileGetTime($recordFilePath, 0, 1);
 
-		$ret = ReadCSV( $recordFilePath )
-		prt( $ret )
-		If -2 == $ret Then
+		$csv = ReadCSV( $recordFilePath )
+		prt( $csv )
+		If -2 == $csv Then
 			; 测试数据出错，删除数据文件
 			TrayTip("Warning", "Invalid data file, delete it! " & $recordFilePath, 5, 2 )
 			FileDelete($recordFilePath)
 			FileDelete(csvToHwl($recordFilePath))
 		Else
-			$reqUrl = $serverUrl & "/savedata?place=" & $testplace _
+			$reqUrl = $SERVER_URL & "/savedata?place=" & $testplace _
 					  & "&roundno=" & $roundNo & "&url=" & $url & "&testtime=" & $testtime _
-					  & "&loadtime=" & $ret & "&pingtime=" & $pingtime
+					  & "&loadtime=" & $csv & "&pingtime=" & $pingtime
 			prt($reqUrl)
-			$response = InetRead ( $reqUrl, 1)
-			$ret2 = BinaryToString($response)
+			$ret2 = sendReq($reqUrl)
 			prt( $ret2 )
 		EndIf
 	Else

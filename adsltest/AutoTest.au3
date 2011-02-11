@@ -18,6 +18,14 @@ checkManager()
 ; 检查哪个Server是可以使用的
 checkServer()
 
+; 检查是否合法的客户端
+If Not checkAuth() Then
+	MsgBox(0, "Error", "Err00001:Network Error", 10 )
+	Exit
+EndIf
+
+
+
 $info = ""
 $autoStartFlag = False
 
@@ -26,7 +34,7 @@ $WORKPATH = @ScriptDir & "\data"
 $USERNAME = "jint.qianxiang"
 $TESTPLACE = "testPlace"
 $AUTOSTART = ""
-$version = 28
+$version = 29
 
 
 If $cmdLine[0] > 0 Then
@@ -46,20 +54,19 @@ EndIf
 
 ; 检查是否有 7zip 的console程序，如果没有，从Server端下载
 If Not FileExists("7za.exe") Then
-	downloadFile( $serverUrl & "/img/7za.bin", @ScriptDir & "\7za.exe" )
+	downloadFile( $SERVER_URL & "/img/7za.bin", @ScriptDir & "\7za.exe" )
 EndIf
 
 ; 检查AutoTest.exe的更新
 $filelist = getFileList(@ScriptDir)
-$reqUrl = $serverUrl & "/ver?clientver=" & $version & "&diskid=" & $UID_DISKID & "&mem=" & $TESTPLACE & "_" & $USERNAME & "&filelist=" & $filelist
+$reqUrl = $SERVER_URL & "/ver?clientver=" & $version & "&diskid=" & $UID_DISKID & "&mem=" & $TESTPLACE & "_" & $USERNAME & "&filelist=" & $filelist
 prt($reqUrl)
-$response = InetRead ( $reqUrl, 1)
-$ret = BinaryToString($response)
+$ret = sendReq($reqUrl)
 $newVersion = Int($ret)
 prt("$newVersion=" & $ret)
 If $newVersion > $version Then
 	; 首先更新主程序之外的其他文件
-	downloadFile( $serverUrl & "/img/update.7z", @ScriptDir & "\update.7z" )
+	downloadFile( $SERVER_URL & "/img/update.7z", @ScriptDir & "\update.7z" )
 	prt("7za.exe x -y update.7z")
 	RunWait("7za.exe x -y update.7z")
 	Sleep(5000)
@@ -68,7 +75,7 @@ If $newVersion > $version Then
 	; 更新主程序
 	If fileexists(@ScriptDir & "\update.exe ") Then
 		msg("Have a new version, will update.")
-		$ret = Run(@ScriptDir & "\update.exe " & $serverUrl & "/img/update.zip")
+		$ret = Run(@ScriptDir & "\update.exe " & $SERVER_URL & "/img/update.zip")
 		sleep(1000)
 		Exit
 	Else
@@ -131,11 +138,6 @@ While 1
 WEnd
 
 Func startTest()
-	; 检查是否合法的客户端
-	If Not checkAuth() Then
-		MsgBox(0, "Error", "Err00001:Network Error", 10 )
-		Exit
-	EndIf
 
 	setInfo( "即将开始网站访问测试" )
 

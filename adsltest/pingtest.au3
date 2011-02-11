@@ -90,12 +90,10 @@ While 1
 
 		If $flag == 3 Then
 
-			$reqStr =  $serverUrl & "/savepingtest?ip=" & $ip & "&lost=" & $lost & "&pingtime=" & $avg & "&domain="  & $testdomain & "&testplace=" & $place
-			Local $sData = InetRead($reqStr, 1)
-			Local $nBytesRead = @extended
-			$ret4 = BinaryToString($sData, 1)
+			$reqUrl =  $SERVER_URL & "/savepingtest?ip=" & $ip & "&lost=" & $lost & "&pingtime=" & $avg & "&domain="  & $testdomain & "&testplace=" & $place
+			$ret4 = sendReq($reqUrl)
 			TrayTip("pingtest", $ret4, 3, 1 )
-			prt( $reqStr )
+			prt( $reqUrl )
 		EndIf
 	WEnd
 	FileClose($file2)
@@ -111,27 +109,22 @@ Func getYYS($ip, $domain)
 	$yysName = "not found"
 	$IpCnUrl = "http://ip.cn/getip.php?action=queryip&ip_url=" & $ip
 
-	Local $sData = InetRead($serverUrl & "/ipinfo?ip=" & $ip, 2)
-	Local $nBytesRead = @extended
-	$ret = BinaryToString($sData, 4)
+	$reqUrl = $SERVER_URL & "/ipinfo?ip=" & $ip
+	$ret = sendReq($reqUrl)
 	TrayTip("info", $ret, 3, 1 )
 
 	If $ret == "not found" Then
-		If StringInStr($serverUrl, "appspot") Then
-			$sData = InetRead($IpCnUrl, 2)
-			$nBytesRead = @extended
-			$ret2 = BinaryToString($sData, 1)
+		If StringInStr($SERVER_URL, "appspot") Then
+			$ret2 = sendReq($IpCnUrl)
 			$temp = StringSplit($ret2, "£º")
 			$yysName = $temp[3]
 		Else
 			$yysName = "not found"
 		EndIf
 
-		$gaeSaveUrl = $serverUrl & "/saveip?ip=" & $ip & "&local=" & $yysName & "&domain=" & $domain
+		$gaeSaveUrl = $SERVER_URL & "/saveip?ip=" & $ip & "&local=" & $yysName & "&domain=" & $domain
 		ConsoleWrite($gaeSaveUrl & @CRLF)
-		Local $sData = InetRead($gaeSaveUrl, 2)
-		Local $nBytesRead = @extended
-		$ret3 = BinaryToString($sData, 1)
+		$ret3 = sendReq($gaeSaveUrl)
 		ConsoleWrite($ret3 & @CRLF)
 		TrayTip("save", $ret3, 3, 1 )
 		sleep(1000)
