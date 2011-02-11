@@ -1,0 +1,1 @@
+pingtest.exe สเลฆยฅ4ยฅ
