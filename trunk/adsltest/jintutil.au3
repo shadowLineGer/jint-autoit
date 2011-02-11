@@ -3,8 +3,8 @@
 #include <Array.au3>
 
 
-Global $UID_DISKID = "abc"
-Global $serverUrl = ""
+Global $UID_DISKID = "abcdefg"
+Global $SERVER_URL = ""
 Global $GaeUrl = "http://kuandaiceshi.appspot.com"
 Global $GaeAuthUrl = "http://qxauth.appspot.com"
 Global $AwsUrl = "http://ec2-184-73-93-85.compute-1.amazonaws.com"
@@ -34,25 +34,20 @@ Func checkServer()
 EndFunc
 
 Func checkServerStatus($testUrl)
-	$tempUrl =  $testUrl & "/status"
-	$hDownload = InetRead ($tempUrl, 1)
-	$ret = BinaryToString($hDownload)
+	$reqUrl =  $testUrl & "/status"
+	$ret = sendReq($reqUrl)
 
 	If 'ok' == $ret Then
-		$serverUrl = $testUrl
-		prt($tempUrl & " is accessible.")
+		$SERVER_URL = $testUrl
+		prt($reqUrl & " is accessible.")
 		return True
 	Else
-		prt($tempUrl & " is NOT accessible.")
+		prt($reqUrl & " is NOT accessible.")
 		return False
 	EndIf
 EndFunc
 
 Func checkAuth()
-	If Not StringInStr($serverUrl, "appspot.com" ) Then
-		Return True
-	EndIf
-
 	;ªÒ»°IP∫ÕMac
 	$ip = @IPAddress1
 	$mac = _GetMAC ($ip)
@@ -70,13 +65,15 @@ Func checkAuth()
 	$cpuId = StringStripWS($cpuId[0],2)
 	DllClose($Dll)
 
+	; FUCK GFW
+	If Not StringInStr($SERVER_URL, "appspot.com" ) Then
+		Return True
+	EndIf
+
 	$reqUrl = $GaeAuthUrl & "/adsl?zero=" & $ip _
 			  & "&one=" & $mac & "&two=" & $diskName & "&three=" & $diskId & "&four=" & $cpuId
-	prt($reqUrl)
-
-	$hDownload = InetRead ( $reqUrl, 1)
-	$ret = BinaryToString($hDownload)
-	;prt( $ret )
+	$ret = sendReq($reqUrl)
+	prt( $reqUrl & " " & $ret )
 
 	If 'yes' == $ret Then
 		;prt("Auth Success")
@@ -185,35 +182,41 @@ Func OpenAdsl()
 	$adslUser = _ArrayCreate("yxal886677", "yxal765645", "xa00000000000", "yxal881430", "290244911")
 	$adslPwd = _ArrayCreate("cmcc123", "cmcc123", "780523", "cmcc123", "737420" )
 
-	$i = 0
 	$ret = False
-	While $i < UBound($adslUser)
-		If Not NetAlive() Then
-			$dialRet = RunWait(@ComSpec & " /c rasdial " & $adslName & " " & $adslUser[$i] & " " & $adslPwd[$i],"", 0)
-			prt("RunWait Return: " & $dialRet)
-			If $dialRet == 0 Then
-				prt("Dial " & $adslUser[$i] & "Success.")
+	If NetAlive() Then
+		$ret = True
+	Else
+		$i = 0
+		$ret = False
+		While $i < UBound($adslUser)
+			If Not NetAlive() Then
+				$dialRet = RunWait(@ComSpec & " /c rasdial " & $adslName & " " & $adslUser[$i] & " " & $adslPwd[$i],"", 0)
+				prt("RunWait Return: " & $dialRet)
+				If $dialRet == 0 Then
+					prt("Dial " & $adslUser[$i] & "Success.")
+					$ret = True
+					ExitLoop
+				EndIf
+			Else
+				prt("Net Alive.")
 				$ret = True
 				ExitLoop
 			EndIf
-		Else
-			prt("Net Alive.")
-			$ret = True
-			ExitLoop
-		EndIf
-		$i = $i+1
-	WEnd
-
+			$i = $i+1
+		WEnd
+	EndIf
 	return $ret
-
-
 EndFunc
 
 Func CloseAdsl()
-	$adslName = "cmcc"
-	$adslUser = "290244911"
-	$adslPwd = "737420"
-	RunWait(@ComSpec & " /c rasdial /disconnect", "", 0);
+	$ret = False
+	If ProcessExists("AutoTest.exe") Or ProcessExists("pingtest.exe") Then
+		$ret = False
+	Else
+		RunWait(@ComSpec & " /c rasdial /disconnect", "", 0)
+		$ret = True
+	EndIf
+	Return $ret
 EndFunc
 
 Func NetAlive()
@@ -254,6 +257,12 @@ EndFunc
 Func getCurrTime()
 	$time = @YEAR & @MON & @MDAY & " " & @HOUR & ":" & @MIN & ":" & @SEC
 	return $time
+EndFunc
+
+Func sendReq($req)
+	$response = InetRead ( $req, 1)
+	$ret = BinaryToString($response)
+	Return $ret
 EndFunc
 
 

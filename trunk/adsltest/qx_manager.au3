@@ -1,4 +1,8 @@
+#include <Misc.au3>
+
 #include "jintutil.au3"
+
+_Singleton("SingleManager")
 
 prt( @ScriptName & " start.")
 
@@ -7,42 +11,67 @@ $RunningFlag = False
 
 $checkDelay = 60000
 
-While 1
-	; 检查是否有测试正在进行
-	If ProcessExists("AutoTest.exe") Then
-		$RunningFlag = True
-		$checkDelay = 20000
-	ElseIf ProcessExists("pingtest.exe") Then
-		$RunningFlag = True
-		$checkDelay = 20000
-	Else
-		$RunningFlag = False
-		$checkDelay = 60000
-	EndIf
+; 打开网络连接
+If Not NetAlive() Then
+	OpenAdsl()
+	$OpenAdslFlag = True
+EndIf
+; 检查哪个Server是可以使用的
+checkServer()
 
-	; 如果有测试，那么保证网络可用
-	If $RunningFlag Then
-		If Not NetAlive() Then
-			OpenAdsl()
-			$OpenAdslFlag = True
-		EndIf
-	Else
-		; 注释起来是为了防止无法下线。
-		;If $OpenAdslFlag Then
-			CloseAdsl()
-			$OpenAdslFlag = False
-		;EndIf
-	EndIf
+While 1
+	OpenAdsl()
 
     ; TODO 向服务器报到
-	$terminal = "abc"
-	InetRead ( $serverUrl & "/checkin?terminal=" & $terminal, 1)
+	$clientId = IniRead( @ScriptDir & "\client.ini", "basic", "clientId", "jint")
+	$reqUrl = $SERVER_URL & "/checkin?terminal=" & $clientId
+	prt( $reqUrl )
+	$ret = sendReq($reqUrl)
+	prt("CheckIn: " & $ret)
 
-	prt("Running: " & $RunningFlag)
-	Sleep(60000)
+	;看看有没有新任务
+	$index = StringInStr($ret, " ")
+	$taskType = StringLeft($ret, $index-1)
+	$task = StringRight($ret, StringLen($ret)-$index)
 
+	$ret = "no run"
+	$checkDelay = 60000
+	If $taskType == "cmd" Then
+		$ret = runCmd($task)
+	ElseIf $taskType == "page" Then
+		$ret = runPage($task)
+	ElseIf $taskType == "ping" Then
+		$ret = runPing($task)
+	ElseIf $taskType == "trace" Then
+		$ret = runTrace($task)
+	Else
+		$checkDelay = 300000
+	EndIf
+	prt("task return: " & $ret)
+
+	CloseAdsl()
+	Sleep($checkDelay)
 WEnd
 
+Func runCmd($cmd)
+	$ret = RunWait(@ComSpec & " /c " & $cmd,"")
+	Return $ret
+EndFunc
+
+Func runPage($cmd)
+	$ret = "will coding"
+	Return $ret
+EndFunc
+
+Func runPing($cmd)
+	$ret = "will coding"
+	Return $ret
+EndFunc
+
+Func runTrace($cmd)
+	$ret = "will coding"
+	Return $ret
+EndFunc
 
 Func checkUpdate()
 	; 从server端获得全部文件的版本和大小
