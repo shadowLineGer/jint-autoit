@@ -22,20 +22,23 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 	$ret = sendReq($reqUrl)
 	prt( $ret )
 
-	; 打开IE
-	;OpenIE()
-
 	;打开 httpwatch 软件
 	;OpenHttpWatch()
+
 
     ; 因为测试有时会出错，无法得到数据，故多做几次，做过的不会重复执行
 	For $loopNum=0 To 3
 
 		; 清除IE缓存
-		OpenIE()
-		ClearCache()
-		sleep(5000)
-		CloseIE()
+		;If WinActive( "Auto Test Tool" ) Then   ;如果锁屏了，就不执行这些需要模拟键盘鼠标的操作了
+		;	OpenIE()
+		;	ClearCache()
+		;	sleep(5000)
+		;	CloseIE()
+		;Else
+			ClearCacheByCmd()
+		;EndIf
+
 
 		; 读入待测站点列表
 		$file = FileOpen($SITELISTPATH, 0)
@@ -282,7 +285,7 @@ Func CloseIE()
 		ProcessClose("iexplore.exe")
 		Sleep(1000)
 	EndIf
-EndFunc   ;==>OpenIE
+EndFunc
 
 Func OpenHttpWatch()
 
@@ -308,9 +311,8 @@ Func OpenHttpWatch()
 	Sleep(100)
 EndFunc   ;==>OpenHttpWatch
 
-
-
-
-
-
+Func ClearCacheByCmd()
+	$cmdline$cmdtext = @ComSpec & " /c RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255"
+	RunWait( $cmdtext, "",@SW_HIDE  )
+EndFunc
 
