@@ -11,7 +11,7 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
     if FileExists( $workpath ) Then
 		$DATAFILEPATH = $workpath & "\" & $roundNo & $testplace
 	else
-		$DATAFILEPATH = @ScriptDir & "\" & $roundNo & $testplace
+		$DATAFILEPATH = @ScriptDir & "\data\" & $roundNo & $testplace
 	EndIf
 	$ret = DirCreate($DATAFILEPATH)
 
@@ -27,7 +27,7 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 
 
     ; 因为测试有时会出错，无法得到数据，故多做几次，做过的不会重复执行
-	For $loopNum=0 To 3
+	For $loopNum=0 To 2
 
 		; 清除IE缓存
 		;If WinActive( "Auto Test Tool" ) Then   ;如果锁屏了，就不执行这些需要模拟键盘鼠标的操作了
@@ -36,7 +36,8 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 		;	sleep(5000)
 		;	CloseIE()
 		;Else
-			ClearCacheByCmd()
+		ClearCacheByCmd()
+		Sleep(5000)
 		;EndIf
 
 
@@ -46,11 +47,14 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 		While 1
 			$line = FileReadLine($file)
 			If @error = -1 Then ExitLoop
-			ConsoleWrite("" & $line & @CRLF)
+			$line = StringStripWS($line, 8)
+			;prt("" & $line & @CRLF)
 
 			; 如果URL是正确的，并且不是注释，就进行速度测试
 			If checkUrl($line) Then
-				If Not FileExists($DATAFILEPATH & "\" & $line & ".hwl") Then
+				$tempPath = $DATAFILEPATH & "\" & $line & ".hwl"
+				;prt($tempPath)
+				If Not FileExists($tempPath) Then
 					;$pingtime = Ping($line,1000)
 
 					;TestSpeed($line, $DATAFILEPATH)
@@ -60,14 +64,18 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 					            ' "/savedata?place='& $testplace & '&roundno=' & $roundNo & '&testtime=100"'
 					;prt($cmdline2)
 					RunWait( $cmdline2, "",@SW_HIDE  )
+					sleep(100)
 					CloseIE()
+					sleep(500)
 				Else
-					ConsoleWrite($line & ".csv is Exist. Skip! " & @CRLF)
+					;prt($line & ".hwl is Exist. Skip! " & @CRLF)
 				EndIf
 			EndIf
 			$i=$i+1
 		WEnd
 		FileClose($file)
+		CloseIE()
+		Sleep(5000)
 	Next
 
     ; 告诉Server端，测试完成
@@ -123,8 +131,6 @@ Func checkUrl($url)
 
 EndFunc   ;==>checkUrl
 
-
-
 Func TestSpeed($url, $dataFilePath )
 
 	;开始 httpwatch 记录
@@ -147,7 +153,6 @@ Func TestSpeed($url, $dataFilePath )
 	Sleep(5000)
 	;MouseClick("")
 
-
 	$count = 0
 	$Totalcount = 0
 	While 1
@@ -159,7 +164,7 @@ Func TestSpeed($url, $dataFilePath )
 			Or StringInStr($statusText, "Done") Or StringInStr($statusText, "完成") _
 			Or StringInStr($statusText, "完毕") _
 			Then
-				;ConsoleWrite("Status: >>>" & $statusText & "<<<" & @CRLF)
+				;prt("Status: >>>" & $statusText & "<<<" & @CRLF)
 				$count = $count + 1
 		Else
 				$count = 0
@@ -203,7 +208,7 @@ Func TestSpeed($url, $dataFilePath )
 	Send("^+{s}")
 	Sleep(500)
 	Send("{BACKSPACE}")
-	ConsoleWrite("" & $url & @CRLF)
+	;prt("" & $url & @CRLF)
 	Sleep(500)
 	Send($recordFilePath)
 	Sleep(1500)
@@ -234,7 +239,7 @@ Func TestSpeed($url, $dataFilePath )
 	Sleep(1000)
 
 	;	$clsList = WinGetClassList($TITLE,"")
-	;	ConsoleWrite("list:" & $clsList & @CRLF)
+	;	prt("list:" & $clsList & @CRLF)
 
 EndFunc   ;==>TestSpeed
 
@@ -274,11 +279,9 @@ Func OpenIE()
 		Sleep(200)
 	EndIf
 
-
 	;WinMove($TITLE, "", 45, 0)
 	WinSetState( $TITLE , "",@SW_MAXIMIZE )
-
-EndFunc   ;==>OpenIE
+EndFunc
 
 Func CloseIE()
 	If ProcessExists("iexplore.exe") Then
@@ -312,7 +315,7 @@ Func OpenHttpWatch()
 EndFunc   ;==>OpenHttpWatch
 
 Func ClearCacheByCmd()
-	$cmdline$cmdtext = @ComSpec & " /c RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255"
+	$cmdtext = @ComSpec & " /c RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255"
 	RunWait( $cmdtext, "",@SW_HIDE  )
 EndFunc
 

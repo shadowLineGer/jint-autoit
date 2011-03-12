@@ -1,7 +1,7 @@
 #include <GUIConstants.au3>
 #include <Misc.au3>
 
-
+#include "ini_info.au3"
 #include "jintutil.au3"
 
 #include "myApp_Control_IE.au3"
@@ -15,14 +15,9 @@ prt(@ScriptName & " start.")
 ; 如果管理员进程没有启动，启动之
 checkManager()
 
-; 检查哪个Server是可以使用的
-checkServer()
 
-; 检查是否合法的客户端
-If Not checkAuth() Then
-	MsgBox(0, "Error", "Err00001:Network Error", 10 )
-	Exit
-EndIf
+
+
 
 
 
@@ -34,7 +29,7 @@ $WORKPATH = @ScriptDir & "\data"
 $USERNAME = "jint.qianxiang"
 $TESTPLACE = "testPlace"
 $AUTOSTART = ""
-$version = 30
+
 
 
 If $cmdLine[0] > 0 Then
@@ -50,37 +45,6 @@ If $cmdLine[0] > 0 Then
 	EndIf
 Else
 	$info = "您可以使用bat文件指定相关参数。"
-EndIf
-
-; 检查是否有 7zip 的console程序，如果没有，从Server端下载
-If Not FileExists("7za.exe") Then
-	downloadFile( $SERVER_URL & "/img/7za.bin", @ScriptDir & "\7za.exe" )
-EndIf
-
-; 检查AutoTest.exe的更新
-$filelist = getFileList(@ScriptDir)
-$reqUrl = $SERVER_URL & "/ver?clientver=" & $version & "&diskid=" & $UID_DISKID & "&mem=" & $TESTPLACE & "_" & $USERNAME & "&filelist=" & $filelist
-prt($reqUrl)
-$ret = sendReq($reqUrl)
-$newVersion = Int($ret)
-prt("$newVersion=" & $ret)
-If $newVersion > $version Then
-	; 首先更新主程序之外的其他文件
-	downloadFile( $SERVER_URL & "/img/update.7z", @ScriptDir & "\update.7z" )
-	prt("7za.exe x -y update.7z")
-	RunWait("7za.exe x -y update.7z")
-	Sleep(5000)
-	FileDelete( "update.7z" )
-
-	; 更新主程序
-	If fileexists(@ScriptDir & "\update.exe ") Then
-		msg("Have a new version, will update.")
-		$ret = Run(@ScriptDir & "\update.exe " & $SERVER_URL & "/img/update.zip")
-		sleep(1000)
-		Exit
-	Else
-		msg("Have a new version, but update fail.")
-	EndIf
 EndIf
 
 Opt("GUIOnEventMode", 1)  ; 切换为 OnEvent 模式
