@@ -1,5 +1,5 @@
 
-$TITLE = "[CLASS:IEFrame]"
+; $TITLE = "[CLASS:IEFrame]"
 
 
 
@@ -243,45 +243,45 @@ Func TestSpeed($url, $dataFilePath )
 
 EndFunc   ;==>TestSpeed
 
-Func ClearCache()
-	Sleep(500)
+;~ Func ClearCache()
+;~ 	Sleep(500)
 
-	If Not WinActive($TITLE, "") Then WinActivate($TITLE, "")
-	Sleep(500)
-	Send("^+{DEL}")
-	Sleep(500)
+;~ 	If Not WinActive($TITLE, "") Then WinActivate($TITLE, "")
+;~ 	Sleep(500)
+;~ 	Send("^+{DEL}")
+;~ 	Sleep(500)
 
-	$title2 = "Delete Browsing History"
-	WinActivate($title2, "")
-	Send("{d 1}")
-	Sleep(1000)
-	WinWaitClose("正在删除")
-	Sleep(500)
-	MouseClick("left")
-	Sleep(500)
+;~ 	$title2 = "Delete Browsing History"
+;~ 	WinActivate($title2, "")
+;~ 	Send("{d 1}")
+;~ 	Sleep(1000)
+;~ 	WinWaitClose("正在删除")
+;~ 	Sleep(500)
+;~ 	MouseClick("left")
+;~ 	Sleep(500)
 
-EndFunc   ;==>ClearCache
+;~ EndFunc   ;==>ClearCache
 
-Func OpenIE()
-	If ProcessExists("iexplore.exe") Then
-		ProcessClose("iexplore.exe")
-		Sleep(1000)
-	EndIf
+;~ Func OpenIE()
+;~ 	If ProcessExists("iexplore.exe") Then
+;~ 		ProcessClose("iexplore.exe")
+;~ 		Sleep(1000)
+;~ 	EndIf
 
-	If Not ProcessExists("iexplore.exe") Then
-		Run("C:\Program Files\Internet Explorer\iexplore.exe")
-		$ieHandle = WinWaitActive("Windows Internet Explorer")
+;~ 	If Not ProcessExists("iexplore.exe") Then
+;~ 		Run("C:\Program Files\Internet Explorer\iexplore.exe")
+;~ 		$ieHandle = WinWaitActive("Windows Internet Explorer")
 
-		Sleep(1000)
-		Send("{TAB}")
-		sleep(300)
-		Send("{ENTER}")
-		Sleep(200)
-	EndIf
+;~ 		Sleep(1000)
+;~ 		Send("{TAB}")
+;~ 		sleep(300)
+;~ 		Send("{ENTER}")
+;~ 		Sleep(200)
+;~ 	EndIf
 
-	;WinMove($TITLE, "", 45, 0)
-	WinSetState( $TITLE , "",@SW_MAXIMIZE )
-EndFunc
+;~ 	;WinMove($TITLE, "", 45, 0)
+;~ 	WinSetState( $TITLE , "",@SW_MAXIMIZE )
+;~ EndFunc
 
 Func CloseIE()
 	If ProcessExists("iexplore.exe") Then
@@ -290,29 +290,29 @@ Func CloseIE()
 	EndIf
 EndFunc
 
-Func OpenHttpWatch()
+;~ Func OpenHttpWatch()
 
-	$x = 20
-	$y = 600
+;~ 	$x = 20
+;~ 	$y = 600
 
-	Sleep(400)
-	$pos = WinGetPos($TITLE);
-	If $pos==0 Then
-		msg("IE not running.")
-	Else
-		$x = $pos[0]+20
-		$y = $pos[1]+$pos[3]-80
-	EndIf
+;~ 	Sleep(400)
+;~ 	$pos = WinGetPos($TITLE);
+;~ 	If $pos==0 Then
+;~ 		msg("IE not running.")
+;~ 	Else
+;~ 		$x = $pos[0]+20
+;~ 		$y = $pos[1]+$pos[3]-80
+;~ 	EndIf
 
-	Sleep(100)
+;~ 	Sleep(100)
 
-	MouseClick("left", $x, $y )
-	Sleep(300)
-	Send("+{F2}")
-	Sleep(500)
-	MouseClick("left", $x, $y)
-	Sleep(100)
-EndFunc   ;==>OpenHttpWatch
+;~ 	MouseClick("left", $x, $y )
+;~ 	Sleep(300)
+;~ 	Send("+{F2}")
+;~ 	Sleep(500)
+;~ 	MouseClick("left", $x, $y)
+;~ 	Sleep(100)
+;~ EndFunc   ;==>OpenHttpWatch
 
 Func ClearCacheByCmd()
 	$cmdtext = @ComSpec & " /c RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255"
