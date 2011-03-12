@@ -73,11 +73,30 @@ While 1
 	Sleep($checkDelay)
 WEnd
 
+; -----------------------------------------  函数的分隔线  -----------------------------------------------
 Func runCmd($cmd)
-	$ret = RunWait(@ComSpec & " /c " & $cmd & " >> data\cmd.log","")
-	$file = FileOpen(@ScriptDir & "\data\cmd.log", 0)
-	FileRead($file)
+	If Not FileExists(@ScriptDir & "\data") Then
+		DirCreate(@ScriptDir & "\data")
+	EndIf
 
+	$ret = RunWait(@ComSpec & " /c " & $cmd & " >> data\cmd.log","")
+	prt($ret)
+
+	$filepath = @ScriptDir & "\data\cmd.log"
+	$result = ""
+	If FileExists($filepath) Then
+		$file = FileOpen($filepath, 0)
+		While 1
+			$line = FileReadLine($file)
+			If @error = -1 Then ExitLoop
+			$result = $result & $line & @CRLF
+		WEnd
+
+		$req = $SERVER_URL & "/cmdlog?place=" & $INI_place & "&result=" & $result
+		prt($req)
+		$ret = sendReq($req)
+		prt($ret)
+	EndIf
 
 	Return $ret
 EndFunc

@@ -20,6 +20,10 @@ If Not checkAuth() Then
 	Exit
 EndIf
 
+; 如果管理员进程没有启动，启动之
+checkManager()
+
+; -----------------------------------------  函数的分隔线  -----------------------------------------------
 
 Func downloadFile( $url, $savePath )
 	$i = 0
