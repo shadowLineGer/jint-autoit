@@ -1,3 +1,6 @@
+
+
+#include "ini_info.au3"
 #include "jintutil.au3"
 
 prt( @ScriptName & " start.")

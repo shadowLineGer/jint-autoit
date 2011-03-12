@@ -2,12 +2,23 @@
 
 #include <Array.au3>
 
+$VERSION = 33
 
 Global $UID_DISKID = "abcdefg"
+
+; 这一部分信息，为了保密防破解，所以不放在 INI 文件里面
 Global $SERVER_URL = ""
-Global $GaeUrl = "http://kuandaiceshi.appspot.com"
-Global $GaeAuthUrl = "http://qxauth.appspot.com"
-Global $AwsUrl = "http://ec2-184-73-93-85.compute-1.amazonaws.com"
+Global $AUTH_Url = "http://qxauth.appspot.com"
+
+; 打开网络连接
+OpenAdsl()
+; 检查哪个Server是可以使用的
+checkServer()
+; 检查是否合法的客户端
+If Not checkAuth() Then
+	MsgBox(0, "Error", "Err00001:Network Error", 10 )
+	Exit
+EndIf
 
 
 Func downloadFile( $url, $savePath )
@@ -26,9 +37,18 @@ Func downloadFile( $url, $savePath )
 EndFunc
 
 Func checkServer()
+	$JintUrl = "http://kuandaiceshi.jint.org"
+	$GaeUrl = "http://kuandaiceshi.appspot.com"
+	$AwsUrl = "http://ec2-184-73-93-85.compute-1.amazonaws.com"
+
 	If checkServerStatus($GaeUrl) Then
+		$SERVER_URL = $GaeUrl
 		sleep(10)
 	ElseIf checkServerStatus($AwsUrl) Then
+		$SERVER_URL = $AwsUrl
+		sleep(10)
+	ElseIf checkServerStatus($JintUrl) Then
+		$SERVER_URL = $JintUrl
 		sleep(10)
 	EndIf
 EndFunc
@@ -38,7 +58,6 @@ Func checkServerStatus($testUrl)
 	$ret = sendReq($reqUrl)
 
 	If 'ok' == $ret Then
-		$SERVER_URL = $testUrl
 		prt($reqUrl & " is accessible.")
 		return True
 	Else
@@ -70,7 +89,7 @@ Func checkAuth()
 		Return True
 	EndIf
 
-	$reqUrl = $GaeAuthUrl & "/adsl?zero=" & $ip _
+	$reqUrl = $AUTH_Url & "/adsl?zero=" & $ip _
 			  & "&one=" & $mac & "&two=" & $diskName & "&three=" & $diskId & "&four=" & $cpuId
 	$ret = sendReq($reqUrl)
 	prt( $reqUrl & " " & $ret )
@@ -83,6 +102,7 @@ Func checkAuth()
 	EndIf
 
 EndFunc
+
 
 Func _GetMAC ($sIP)
   Local $MAC,$MACSize
@@ -175,49 +195,7 @@ Func getFileList( $dir )
 
 EndFunc
 
-Func OpenAdsl()
-	$adslName = "cmcc"
-	;$adslUser = "290244911"
-	;$adslPwd = "737420"
-	$adslUser = _ArrayCreate("yxal886677", "yxal765645", "xa00000000000", "yxal881430", "290244911")
-	$adslPwd = _ArrayCreate("cmcc123", "cmcc123", "780523", "cmcc123", "737420" )
 
-	$ret = False
-	If NetAlive() Then
-		$ret = True
-	Else
-		$i = 0
-		$ret = False
-		While $i < UBound($adslUser)
-			If Not NetAlive() Then
-				$dialRet = RunWait(@ComSpec & " /c rasdial " & $adslName & " " & $adslUser[$i] & " " & $adslPwd[$i],"", 0)
-				prt("RunWait Return: " & $dialRet)
-				If $dialRet == 0 Then
-					prt("Dial " & $adslUser[$i] & "Success.")
-					$ret = True
-					ExitLoop
-				EndIf
-			Else
-				prt("Net Alive.")
-				$ret = True
-				ExitLoop
-			EndIf
-			$i = $i+1
-		WEnd
-	EndIf
-	return $ret
-EndFunc
-
-Func CloseAdsl()
-	$ret = False
-	If ProcessExists("AutoTest.exe") Or ProcessExists("pingtest.exe") Then
-		$ret = False
-	Else
-		RunWait(@ComSpec & " /c rasdial /disconnect", "", 0)
-		$ret = True
-	EndIf
-	Return $ret
-EndFunc
 
 Func NetAlive()
 	If Ping ("www.qq.com",3000) > 0 Then     ; ping这一个应该就够了。
@@ -265,10 +243,73 @@ Func sendReq($req)
 	Return $ret
 EndFunc
 
+Func getHour()
+	$hour = @YEAR & @MON & @MDAY & @HOUR
+	Return $hour
+EndFunc
+
 
 ;prt(Ping ("211.137.130.19",3000))
 ;prt( @error)
 
+
+
+Func OpenAdsl()
+	$adslName = "cmcc"
+	;$adslUser = "290244911"
+	;$adslPwd = "737420"
+	$adslUser = _ArrayCreate("xa13772543671", "xa13572927742", "xa15829279996", "xa13991283183", "xa15102932623")
+	$adslPwd = _ArrayCreate("cmcc123", "cmcc123", "cmcc123", "cmcc123", "cmcc123" )
+
+	$ret = False
+	If NetAlive() Then
+		$ret = True
+	Else
+		$i = 0
+		$ret = False
+		; 为了应对多拨情况下的帐号使用不均衡，只需要简单的随机就可以了，不必考虑完备。
+		$arraySize = UBound($adslUser)
+		While $i < $arraySize
+			If Not NetAlive() Then
+				$idx = Random(0,$arraySize-1,1)
+
+				$dialRet = RunWait(@ComSpec & " /c rasdial " & $adslName & " " & $adslUser[$i] & " " & $adslPwd[$i],"", 0)
+				prt("RunWait Return: " & $dialRet)
+				If $dialRet == 0 Then
+					prt("Dial " & $adslUser[$i] & " Success.")
+					$ret = True
+					ExitLoop
+				EndIf
+			Else
+				prt("Net Alive.")
+				$ret = True
+				ExitLoop
+			EndIf
+			$i = $i+1
+		WEnd
+	EndIf
+	return $ret
+EndFunc
+
+Func CloseAdsl()
+	$ret = False
+	If inWorking() Then
+		prt("Have test runniing, keep connect.")
+		$ret = False
+	Else
+		RunWait(@ComSpec & " /c rasdial /disconnect", "", 0)
+		$ret = True
+	EndIf
+	Return $ret
+EndFunc
+
+Func inWorking()
+	If ProcessExists("AutoTest.exe") Or ProcessExists("pingtest.exe") Then
+		Return True
+	Else
+		Return False
+	EndIf
+EndFunc
 
 
 

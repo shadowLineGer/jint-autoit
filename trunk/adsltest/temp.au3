@@ -1,5 +1,5 @@
-#include "jintutil.au3"
-#include "myapp_Process_Data.au3"
+;#include "jintutil.au3"
+;#include "myapp_Process_Data.au3"
 
 ;$b = ReadCSV( "C:\temp\2010113012电信对比欧亚大厦\www.baidu.com.csv" )
 ;prt( $b )
@@ -21,7 +21,22 @@ $i=0
 ;	$i=$i+1
 ;WEnd
 
+;prt( StringStripWS("abcdef   ", 8))
 
-$cmdtext = @ComSpec & " /c RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255"
-RunWait( $cmdtext, "",@SW_HIDE  )
+;$cmdtext = @ComSpec & " /c RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255"
+;RunWait( $cmdtext, "",@SW_HIDE  )
 
+;prt( RunWait (@ComSpec & " /c ipconfig " ) )
+
+
+ConsoleWrite( Random(0,4,1) )
+ConsoleWrite( Random(0,4,1) )
+ConsoleWrite( Random(0,4,1) )
+ConsoleWrite( Random(0,4,1) )
+ConsoleWrite( Random(0,4,1) )
+ConsoleWrite( Random(0,4,1) )
+ConsoleWrite( Random(0,4,1) )
+ConsoleWrite( Random(0,4,1) )
+ConsoleWrite( Random(0,4,1) )
+ConsoleWrite( Random(0,4,1) )
+ConsoleWrite( Random(0,4,1) )
