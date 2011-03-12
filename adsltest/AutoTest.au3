@@ -12,12 +12,6 @@ _Singleton("SingleAutoTest")
 
 prt(@ScriptName & " start.")
 
-; 如果管理员进程没有启动，启动之
-checkManager()
-
-
-
-
 
 
 
@@ -26,9 +20,9 @@ $autoStartFlag = False
 
 ; 参数包括： 工作目录，用户名，测试点名称
 $WORKPATH = @ScriptDir & "\data"
-$USERNAME = "jint.qianxiang"
-$TESTPLACE = "testPlace"
-$AUTOSTART = ""
+$USERNAME = $INI_clientId
+$TESTPLACE = $INI_place
+$AUTOSTART = $INI_runMode
 
 
 
@@ -90,7 +84,7 @@ if StringLen($info)>0  Then
 	setInfo( $info )
 EndIf
 
-If "autostart" == $AUTOSTART Then $autoStartFlag=True
+If "autostart" == $AUTOSTART Or "auto" == $AUTOSTART Then $autoStartFlag=True
 If $autoStartFlag Then
 	;msg($autoStartFlag)
 	Sleep(4000)
@@ -101,6 +95,8 @@ While 1
   Sleep(10)  ; 不做任何事
 WEnd
 
+
+; -----------------------------------------  函数的分隔线  -----------------------------------------------
 Func startTest()
 
 	setInfo( "即将开始网站访问测试" )

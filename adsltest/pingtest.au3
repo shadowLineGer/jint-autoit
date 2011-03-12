@@ -107,7 +107,7 @@ MsgBox(0, "Output", "已完成IP测试", 20)
 
 RunWait(@ComSpec & " /c rasdial /disconnect", "", 0) ;
 
-
+; -----------------------------------------  函数的分隔线  -----------------------------------------------
 Func getYYS($ip, $domain)
 	$yysName = "not found"
 	$IpCnUrl = "http://ip.cn/getip.php?action=queryip&ip_url=" & $ip
