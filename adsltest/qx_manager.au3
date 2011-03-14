@@ -1,11 +1,11 @@
 #include <Misc.au3>
 
-#include "ini_info.au3"
-#include "jintutil.au3"
+
+#include "common.au3"
 
 _Singleton("SingleManager")
 
-prt( @ScriptName & " start.")
+prt( @ScriptName & " start. Version:" & $VERSION)
 
 $OpenAdslFlag = False
 $RunningFlag = False
@@ -30,11 +30,12 @@ While 1
 		; 向服务器报到
 		$reqUrl = $SERVER_URL & "/checkin?terminal=" & $INI_clientId & "&place=" & $INI_place
 		;prt( $reqUrl )
-		$ret = sendReq($reqUrl)
-		prt("CheckIn: " & $ret)
+		$retCheckIn = sendReq($reqUrl)
+		prt("CheckIn: " & $retCheckIn)
 
-		; 看看有没有新版本的client
+		; 看看有没有新版本的client  每小时检查一次   每次启动检查一次
 		$nowHour = getHour()
+		prt("$nowHour: " & $nowHour & "   $oldHour: " & $oldHour )
 		If $nowHour > $oldHour Then
 			prt("Check Update")
 			checkUpdate()
@@ -42,12 +43,17 @@ While 1
 		EndIf
 
 		;看看有没有新任务
-		$index = StringInStr($ret, " ")
-		$taskType = StringLeft($ret, $index-1)
-		$task = StringRight($ret, StringLen($ret)-$index)
+		$taskType = "sleep"
+		$task = ""
+		If Not "ok" == $retCheckIn Then
+			$index = StringInStr($retCheckIn, ",")
+			$taskType = StringLeft($retCheckIn, $index-1)
+			$task = StringRight($retCheckIn, StringLen($retCheckIn)-$index)
+			prt( "TASK: " & $taskType & ":" & $task )
+		EndIf
 
-		$ret = "no run"
-
+		; 处理新任务
+		$ret = ""
 		If $taskType == "cmd" Then
 			$ret = runCmd($task)
 		ElseIf $taskType == "page" Then
@@ -59,6 +65,8 @@ While 1
 		ElseIf $taskType == "trace" Then
 			$ret = runTrace($task)
 			$checkDelay = $INI_minDelay
+		ElseIf $taskType == "sleep" Then
+			Sleep($task)
 		Else
 			If $checkDelay < $INI_maxDelay Then
 				$checkDelay = $checkDelay * 2
@@ -126,11 +134,38 @@ Func checkUpdate()
 	$ret = sendReq($reqUrl)
 	$newVersion = Int($ret)
 	prt("$newVersion=" & $ret)
+
+	; 等待其他程序退出
+	$exefiles = StringSplit($INI_exelist,",")
+
+	$exeflag = True
+	$waitTime = 1
+	$waitCount = 0
+	While $exeflag == True And $waitCount < 10
+		Sleep( $waitTime * 1000 )
+		$waitCount = $waitCount + 1
+
+		$exeflag = False
+		$i=1
+		For $i=1 To $exefiles[0]
+			If ProcessExists($exefiles[$i]) Then
+				$exeflag = True
+				prt("Wait " & $exefiles[$i] & "Quit.")
+			EndIf
+		Next
+	WEnd
+
+	; 超时后，关闭所有程序
+	$i=1
+	For $i=1 To $exefiles[0]
+		If ProcessExists($exefiles[$i]) Then
+			ProcessClose($exefiles[$i])
+			prt("Force " & $exefiles[$i] & "Exit.")
+		EndIf
+	Next
+
 	If $newVersion > $VERSION Then
 		; 首先更新主程序之外的其他文件
-		; 关闭管理程序
-		ProcessClose("qx_manager.exe")
-
 		downloadFile( $SERVER_URL & "/img/update.7z", @ScriptDir & "\update.7z" )
 		prt("7za.exe x -y update.7z")
 		RunWait("7za.exe x -y update.7z")

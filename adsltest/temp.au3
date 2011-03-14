@@ -1,5 +1,14 @@
-;#include "jintutil.au3"
+#include "jintutil.au3"
 ;#include "myapp_Process_Data.au3"
+
+$INI_exelist = "AutoTest.exe,pingtest.exe,update.exe"
+$exefiles = StringSplit($INI_exelist,",")
+$i=1
+For $i=1 To $exefiles[0]
+	prt($exefiles[$i])
+Next
+
+prt($I)
 
 ;$b = ReadCSV( "C:\temp\2010113012电信对比欧亚大厦\www.baidu.com.csv" )
 ;prt( $b )
@@ -14,7 +23,7 @@
 
 ;$ret = RunWait(@ComSpec & " /c " & $task,"")
 
-$i=0
+;$i=0
 ;While $i<100
 ;	prt( "WinActivate:" & WinActive( "Auto Test Tool" ) )
 ;	sleep(300)
@@ -28,15 +37,15 @@ $i=0
 
 ;prt( RunWait (@ComSpec & " /c ipconfig " ) )
 
+;~ ConsoleWrite("start")
+;~ $abc = "  2000"
+;~ sleep(($abc))
+;~ ConsoleWrite("aaaa")
+;~ sleep($abc + 10)
+;~ ConsoleWrite("end")
 
-ConsoleWrite( Random(0,4,1) )
-ConsoleWrite( Random(0,4,1) )
-ConsoleWrite( Random(0,4,1) )
-ConsoleWrite( Random(0,4,1) )
-ConsoleWrite( Random(0,4,1) )
-ConsoleWrite( Random(0,4,1) )
-ConsoleWrite( Random(0,4,1) )
-ConsoleWrite( Random(0,4,1) )
-ConsoleWrite( Random(0,4,1) )
-ConsoleWrite( Random(0,4,1) )
-ConsoleWrite( Random(0,4,1) )
+
+
+
+
+

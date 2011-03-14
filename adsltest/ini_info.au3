@@ -7,6 +7,7 @@ Global $INI_runMode  = "auto"
 Global $INI_minDelay = "2000"
 Global $INI_workDelay = "20000"
 Global $INI_maxDelay = "1200000"
+Global $INI_exelist = "AutoTest.exe,pingtest.exe,update.exe"
 
 readIni()
 
@@ -19,7 +20,9 @@ Func readIni()
 
 	; 取配置信息  服务端部分  这个部分，每个客户端一样
 	Global $INI_minDelay = IniRead( @ScriptDir & "\server.ini", "task", "minDelay", "2000")
-	Global $INI_workDelay = IniRead( @ScriptDir & "\server.ini", "task", "minDelay", "20000")
+	Global $INI_workDelay = IniRead( @ScriptDir & "\server.ini", "task", "workDelay", "20000")
 	Global $INI_maxDelay = IniRead( @ScriptDir & "\server.ini", "task", "maxDelay", "1200000")
+
+	Global $INI_exelist = IniRead( @ScriptDir & "\server.ini", "update", "exelist", "AutoTest.exe,pingtest.exe,update.exe")
 EndFunc
 
