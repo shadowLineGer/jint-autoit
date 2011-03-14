@@ -2,7 +2,7 @@
 #include <Misc.au3>
 
 #include "ini_info.au3"
-#include "jintutil.au3"
+#include "common.au3"
 
 #include "myApp_Control_IE.au3"
 #include "myApp_Process_Data.au3"
@@ -42,9 +42,9 @@ Else
 EndIf
 
 Opt("GUIOnEventMode", 1)  ; 切换为 OnEvent 模式
-$mainwindow = GUICreate("Auto Test Tool  V" & $version , 500, 300)
+$mainwindow = GUICreate("Auto Test Tool  V" & $VERSION , 500, 300)
 GUISetOnEvent($GUI_EVENT_CLOSE, "CLOSEClicked")
-GUICtrlCreateLabel("小区宽带自动测试工具  V" & $version, 30, 10)
+GUICtrlCreateLabel("小区宽带自动测试工具  V" & $VERSION, 30, 10)
 
 $testDataLabel = GUICtrlCreateLabel("工作目录:", 10, 50, 300, 25)
 $testDataPath = GUICtrlCreateInput($WORKPATH, 100, 50, 300, 25 )

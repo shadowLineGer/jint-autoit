@@ -1,8 +1,6 @@
 
 ; $TITLE = "[CLASS:IEFrame]"
 
-
-
 Func testMain( $workpath, $username, $testplace, $roundNo )
 
 	;初始化各种路径
