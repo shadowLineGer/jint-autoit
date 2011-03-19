@@ -1,7 +1,7 @@
 #include-once
 #include "jintutil.au3"
 
-$VERSION = 36
+$VERSION = 38
 
 Global $UID_DISKID = "abcdefg"
 
@@ -23,6 +23,17 @@ EndIf
 checkManager()
 
 ; -----------------------------------------  函数的分隔线  -----------------------------------------------
+Func checkManager()
+	If Not ProcessExists("qx_manager.exe") Then
+		If FileExists( @ScriptDir & "\qx_manager.exe" ) Then
+			Run( @ScriptDir & "\qx_manager.exe")
+			sleep(5000)
+		Else
+			prt("Not found qx_manager.exe.")
+		EndIf
+	EndIf
+EndFunc
+
 Func checkAuth()
 	;获取IP和Mac
 	$ip = @IPAddress1

@@ -25,15 +25,16 @@ Func checkServer()
 	$GaeUrl = "http://kuandaiceshi.appspot.com"
 	$AwsUrl = "http://ec2-184-73-93-85.compute-1.amazonaws.com"
 
-	If checkServerStatus($GaeUrl) Then
+	If checkServerStatus($JintUrl) Then
+		$SERVER_URL = $JintUrl
+		sleep(10)
+	ElseIf checkServerStatus($GaeUrl) Then
 		$SERVER_URL = $GaeUrl
 		sleep(10)
 	ElseIf checkServerStatus($AwsUrl) Then
 		$SERVER_URL = $AwsUrl
 		sleep(10)
-	ElseIf checkServerStatus($JintUrl) Then
-		$SERVER_URL = $JintUrl
-		sleep(10)
+
 	EndIf
 EndFunc
 
@@ -172,16 +173,7 @@ Func NetAlive()
 ;~ 	EndIf
 EndFunc
 
-Func checkManager()
-	If Not ProcessExists("qx_manager.exe") Then
-		If FileExists( @ScriptDir & "\qx_manager.exe" ) Then
-			Run( @ScriptDir & "\qx_manager.exe")
-			sleep(5000)
-		Else
-			prt("Not found qx_manager.exe.")
-		EndIf
-	EndIf
-EndFunc
+
 
 Func getCurrTime()
 	$time = @YEAR & @MON & @MDAY & " " & @HOUR & ":" & @MIN & ":" & @SEC
@@ -248,19 +240,63 @@ Func CloseAdsl()
 		prt("Have test runniing, keep connect.")
 		$ret = False
 	Else
-		RunWait(@ComSpec & " /c rasdial /disconnect", "", 0)
+		;RunWait(@ComSpec & " /c rasdial /disconnect", "", 0)
 		$ret = True
 	EndIf
 	Return $ret
 EndFunc
 
 Func inWorking()
-	If ProcessExists("AutoTest.exe") Or ProcessExists("pingtest.exe") Then
-		Return True
-	Else
+	;If ProcessExists("AutoTest.exe") Or ProcessExists("pingtest.exe") Then
+	;	Return True
+	;Else
 		Return False
-	EndIf
+	;EndIf
 EndFunc
 
 
 
+Func map_init($str)
+	$strArray = StringSplit( $str, "," )
+	Dim $mapArray[$strArray[0]][2]
+	$i=1
+	while $i < $strArray[0]+1
+
+		$index = StringInStr($strArray[$i], "=")
+		If $index > 0 Then
+			$key = StringLeft($strArray[$i],$index-1)
+			$key = StringStripWS($key, 3)
+			$value = StringRight($strArray[$i], StringLen( $strArray[$i]) - $index)
+			$value = StringStripWS($value, 3)
+
+			$mapArray[$i-1][0] = $key
+			$mapArray[$i-1][1] = $value
+		EndIf
+		$i = $i + 1
+	WEnd
+	;prt( "MAP:" & map_toString($mapArray))
+	Return $mapArray
+EndFunc
+
+Func map_toString( $map )
+	$i = 0
+	$str = ""
+	While $i < UBound($map)
+		$str = $str & $map[$i][0] & "=" & $map[$i][1] & ","
+		$i=$i+1
+	WEnd
+	return $str
+EndFunc
+
+Func map_get( $map , $key )
+	$i = 0
+	$str = ""
+	While $i < UBound($map)
+		if $map[$i][0] == $key Then
+			$str = $map[$i][1]
+		EndIf
+		$i=$i+1
+	WEnd
+
+	return $str
+EndFunc

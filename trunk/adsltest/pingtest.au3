@@ -10,7 +10,6 @@ If $cmdLine[0] > 0 Then
 	$place = $cmdLine[1]
 EndIf
 
-checkManager()
 
 $pingfile = "pingrecord.txt"
 If FileExists($pingfile) Then
