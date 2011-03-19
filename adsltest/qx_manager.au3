@@ -29,9 +29,9 @@ While 1
 	Else
 		; 向服务器报到
 		$reqUrl = $SERVER_URL & "/checkin?terminal=" & $INI_clientId & "&place=" & $INI_place
-		;prt( $reqUrl )
+		prt( $reqUrl )
 		$retCheckIn = sendReq($reqUrl)
-		prt("CheckIn: " & $retCheckIn)
+
 
 		; 看看有没有新版本的client  每小时检查一次   每次启动检查一次
 		$nowHour = getHour()
@@ -44,29 +44,37 @@ While 1
 
 		;看看有没有新任务
 		$taskType = "sleep"
+		$taskid = ""
 		$task = ""
-		If Not "ok" == $retCheckIn Then
-			$index = StringInStr($retCheckIn, ",")
-			$taskType = StringLeft($retCheckIn, $index-1)
-			$task = StringRight($retCheckIn, StringLen($retCheckIn)-$index)
-			prt( "TASK: " & $taskType & ":" & $task )
-		EndIf
+		prt("CheckIn: " & $retCheckIn)
+		If Not ("ok" == $retCheckIn) Then
+			$paramArray = map_init($retCheckIn)
 
-		; 处理新任务
-		$ret = ""
-		If $taskType == "cmd" Then
-			$ret = runCmd($task)
-		ElseIf $taskType == "page" Then
-			$ret = runPage($task)
-			$checkDelay = $INI_minDelay
-		ElseIf $taskType == "ping" Then
-			$ret = runPing($task)
-			$checkDelay = $INI_minDelay
-		ElseIf $taskType == "trace" Then
-			$ret = runTrace($task)
-			$checkDelay = $INI_minDelay
-		ElseIf $taskType == "sleep" Then
-			Sleep($task)
+			$taskid = map_get($paramArray, "taskid")
+			$taskType = map_get($paramArray, "tasktype")
+			$task = map_get($paramArray, "task")
+
+			prt( "TASK: " & $taskType & ":" & $task )
+			; 处理新任务
+			$ret = ""
+			If $taskType == "cmd" Then
+				$ret = runCmd($taskid, $task)
+			ElseIf $taskType == "page" Then
+				$ret = runPage($task)
+				$checkDelay = $INI_minDelay
+			ElseIf $taskType == "ping" Then
+				$ret = runPing($task)
+				$checkDelay = $INI_minDelay
+			ElseIf $taskType == "trace" Then
+				$ret = runTrace($task)
+				$checkDelay = $INI_minDelay
+			ElseIf $taskType == "sleep" Then
+				Sleep($task)
+			EndIf
+			prt("task return: " & $ret)
+
+
+
 		Else
 			If $checkDelay < $INI_maxDelay Then
 				$checkDelay = $checkDelay * 2
@@ -74,17 +82,21 @@ While 1
 				$checkDelay = $INI_maxDelay
 			EndIf
 		EndIf
-		prt("task return: " & $ret)
 
 		CloseAdsl()
 	EndIf
+	prt("$checkDelay=" & $checkDelay)
 	Sleep($checkDelay)
 WEnd
 
 ; -----------------------------------------  函数的分隔线  -----------------------------------------------
-Func runCmd($cmd)
+Func runCmd($taskid, $cmd)
 	If Not FileExists(@ScriptDir & "\data") Then
 		DirCreate(@ScriptDir & "\data")
+	EndIf
+
+	If FileExists(@ScriptDir & "\data\cmd.log") Then
+		FileDelete(@ScriptDir & "\data\cmd.log")
 	EndIf
 
 	$ret = RunWait(@ComSpec & " /c " & $cmd & " >> data\cmd.log","")
@@ -99,8 +111,17 @@ Func runCmd($cmd)
 			If @error = -1 Then ExitLoop
 			$result = $result & $line & @CRLF
 		WEnd
+		FileClose($file)
+		$result = stringreplace( $result, "&", "%26")
 
-		$req = $SERVER_URL & "/cmdlog?place=" & $INI_place & "&result=" & $result
+		$req = "place=" & $INI_place & "&result=" & $result& "&taskid=" & $taskid
+		$oHTTP = ObjCreate("microsoft.xmlhttp")
+		$oHTTP.Open("post", $SERVER_URL & "/addcmdlog",false)
+		$oHTTP.setRequestHeader("Cache-Control", "no-cache")
+		$oHTTP.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
+		$oHTTP.Send($req )
+
+		$req = $SERVER_URL & "/endtask?taskid=" & $taskid
 		prt($req)
 		$ret = sendReq($req)
 		prt($ret)
