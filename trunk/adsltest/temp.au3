@@ -1,6 +1,27 @@
 #include "jintutil.au3"
 ;#include "myapp_Process_Data.au3"
 
+;runDos("bin\pingtest.exe g.cn")
+
+$SITELISTPATH = @ScriptDir & "\bin\sitelist.txt"
+$file = FileOpen($SITELISTPATH, 0)
+If @error = -1 Then
+	prt("FileOpen @error " & @error & "  file:" & $SITELISTPATH)
+EndIf
+
+While 1
+	$testdomain = FileReadLine($file)
+	If @error = 1 Or @error = -1 Then
+		prt("FileReadLine @error " & @error & "  file:" & $SITELISTPATH)
+		ExitLoop
+	EndIf
+
+	prt($testdomain)
+WEnd
+
+FileClose($file)
+
+
 ;$param = "taskid=2,tasktype=cmd,task=dir"
 ;map_init($param)
 ;$param = " "
@@ -11,12 +32,12 @@
 ;$arr = map_init($param)
 ;prt( map_get($arr,"task") )
 
-$oHTTP = ObjCreate("microsoft.xmlhttp")
-$oHTTP.Open("post","http://localhost/cmdlog",false)
-$oHTTP.setRequestHeader("Cache-Control", "no-cache")
-$oHTTP.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
+;$oHTTP = ObjCreate("microsoft.xmlhttp")
+;$oHTTP.Open("post","http://localhost/cmdlog",false)
+;$oHTTP.setRequestHeader("Cache-Control", "no-cache")
+;$oHTTP.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
 ;$oHTTP.setRequestHeader("Referer","http://www.wansong.net/loginframe.htm")
-$oHTTP.Send("UserName=****&UserPass=****&CookieDate=30&submit=%B5%C7+%C2%BC")
+;$oHTTP.Send("UserName=****&UserPass=****&CookieDate=30&submit=%B5%C7+%C2%BC")
 
 
 

@@ -180,17 +180,21 @@ Func getCurrTime()
 	return $time
 EndFunc
 
+Func getHour()
+	$hour = @YEAR & @MON & @MDAY & @HOUR
+	Return $hour
+EndFunc
+
 Func sendReq($req)
 	$response = InetRead ( $req, 1)
 	$ret = BinaryToString($response)
 	Return $ret
 EndFunc
 
-Func getHour()
-	$hour = @YEAR & @MON & @MDAY & @HOUR
-	Return $hour
+Func runDos($cmd)
+	$fullcmd = @ComSpec & " /c " & $cmd
+	return RunWait( $fullcmd, @ScriptDir) ;, @SW_HIDE )
 EndFunc
-
 
 ;prt(Ping ("211.137.130.19",3000))
 ;prt( @error)
@@ -254,6 +258,13 @@ Func inWorking()
 	;EndIf
 EndFunc
 
+Func getRoundNo()
+	return @YEAR & @MON & @MDAY & @HOUR ;& @MIN & @SEC
+EndFunc
+
+Func getLongRoundNo()
+	return @YEAR & @MON & @MDAY & @HOUR & @MIN ;& @SEC
+EndFunc
 
 
 Func map_init($str)
