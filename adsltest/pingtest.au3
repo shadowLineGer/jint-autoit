@@ -1,36 +1,56 @@
 
-
 #include "ini_info.au3"
 #include "common.au3"
 
+
 prt( @ScriptName & " start.")
 
-$place = "test"
+$roundno = getLongRoundNo()
+
 If $cmdLine[0] > 0 Then
-	$place = $cmdLine[1]
+	$sitelistfile = $cmdLine[1]
+Else
+	$sitelistfile = "sitelist.txt"
 EndIf
 
 
-$pingfile = "pingrecord.txt"
+$pingfile = "pingrecord" & $roundno & ".txt"
 If FileExists($pingfile) Then
 	FileDelete( $pingfile )
 EndIf
 
 ; 读入待测站点列表
-$SITELISTPATH = "" & @ScriptDir & "\sitelist.txt"
+$SITELISTPATH = @ScriptDir & "\" & $sitelistfile
+
+If Not FileExists($SITELISTPATH) Then
+	$cmd = "echo " & $sitelistfile & " > " & $sitelistfile & ".txt"
+	runDos($cmd)
+	$SITELISTPATH = $SITELISTPATH & ".txt"
+EndIf
+
 $file = FileOpen($SITELISTPATH, 0)
+If @error = -1 Then
+	prt("FileOpen @error " & @error & "  file:" & $SITELISTPATH)
+EndIf
+
 $i=1
 While 1
 	$testdomain = FileReadLine($file)
-	If @error = -1 Then ExitLoop
-	;prt($testdomain )
+	If @error = 1 Or @error = -1 Then
+		;prt("FileReadLine @error " & @error & "  file:" & $SITELISTPATH)
+		ExitLoop
+	EndIf
 
 	$myCmdline = @ComSpec & " /c " & "ping " & $testdomain & " > " & $pingfile
 	;prt( $myCmdline )
 	RunWait( $myCmdline, @ScriptDir, @SW_HIDE )
+	Sleep(1000)
 
 	; 读入Ping命令的输出文件
 	$file2 = FileOpen($pingfile, 0)
+	If @error = -1 Then
+		prt("FileOpen @error " & @error & "  file:" & $pingfile)
+	EndIf
 
 	$i=0
 	$flag = 0
@@ -38,9 +58,16 @@ While 1
 	$lost = ""
 	$avg = ""
 	$yunyingshang = ""
+	;prt("will while" )
 	While 1
+		;prt("start while" )
 		$line2 = FileReadLine($file2)
-		If @error = -1 Then ExitLoop
+		If @error = 1 Or @error = -1 Then
+			;prt("FileReadLine @error " & @error & "  file:" & $pingfile)
+			ExitLoop
+		EndIf
+
+		;prt($line2)
 
 		If  $flag == 0 And StringInStr($line2, "[") And StringInStr($line2, "]") Then
 			$flag = 1
@@ -92,9 +119,9 @@ While 1
 
 		If $flag == 3 Then
 
-			$reqUrl =  $SERVER_URL & "/savepingtest?ip=" & $ip & "&lost=" & $lost & "&pingtime=" & $avg & "&domain="  & $testdomain & "&testplace=" & $place
+			$reqUrl =  $SERVER_URL & "/savepingtest?ip=" & $ip & "&lost=" & $lost & "&pingtime=" & $avg & "&domain="  & $testdomain & "&testplace=" & $INI_place & "&roundno=" & $roundno
 			$ret4 = sendReq($reqUrl)
-			TrayTip("pingtest", $ret4, 3, 1 )
+			TrayTip("pingtest", $testdomain & " " & $ip & " " & $lost & " " & $avg & " " & $ret4, 3, 1 )
 			prt( $reqUrl )
 		EndIf
 	WEnd
@@ -102,9 +129,11 @@ While 1
 WEnd
 FileClose($file)
 
+If FileExists($pingfile) Then
+	FileDelete( $pingfile )
+EndIf
 MsgBox(0, "Output", "已完成IP测试", 20)
-
-RunWait(@ComSpec & " /c rasdial /disconnect", "", 0) ;
+prt( @ScriptName & " END.")
 
 ; -----------------------------------------  函数的分隔线  -----------------------------------------------
 Func getYYS($ip, $domain)
@@ -113,10 +142,11 @@ Func getYYS($ip, $domain)
 
 	$reqUrl = $SERVER_URL & "/ipinfo?ip=" & $ip
 	$ret = sendReq($reqUrl)
-	TrayTip("info", $ret, 3, 1 )
+	;TrayTip("info", $ret, 3, 1 )
+	;prt($ret)
 
 	If $ret == "not found" Then
-		If StringInStr($SERVER_URL, "appspot") Then
+		If StringInStr($SERVER_URL, "appspot") Or StringInStr($SERVER_URL, "jint.org") Then
 			$ret2 = sendReq($IpCnUrl)
 			$temp = StringSplit($ret2, "：")
 			$yysName = $temp[3]
@@ -129,7 +159,7 @@ Func getYYS($ip, $domain)
 		$ret3 = sendReq($gaeSaveUrl)
 		ConsoleWrite($ret3 & @CRLF)
 		TrayTip("save", $ret3, 3, 1 )
-		sleep(1000)
+		sleep(100)
 	;Else
 		;$yysName = $ret
 		;sleep(100)

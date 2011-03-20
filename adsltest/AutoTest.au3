@@ -56,7 +56,7 @@ $userNameText = GUICtrlCreateInput( $USERNAME, 100, 80, 300, 25 )
 $testPlaceLabel = GUICtrlCreateLabel("≤‚ ‘µ„√˚≥∆:", 10, 110, 300, 25 )
 $testPlaceText = GUICtrlCreateInput( $TESTPLACE, 100, 110, 300, 25 )
 
-$testRoundNo = @YEAR & @MON & @MDAY & @HOUR ;& @MIN & @SEC
+$testRoundNo = getRoundNo()
 $testRoundLabel = GUICtrlCreateLabel("≤‚ ‘¬÷¥Œ:", 10, 140, 300, 25 )
 $testRoundText = GUICtrlCreateInput( $testRoundNo, 100, 140, 300, 25 )
 

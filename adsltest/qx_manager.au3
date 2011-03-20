@@ -59,22 +59,25 @@ While 1
 			$ret = ""
 			If $taskType == "cmd" Then
 				$ret = runCmd($taskid, $task)
+
+			ElseIf $taskType == "update" Then
+				$ret = runUpdate($taskid, $task)
+
 			ElseIf $taskType == "page" Then
 				$ret = runPage($task)
-				$checkDelay = $INI_minDelay
+
 			ElseIf $taskType == "ping" Then
-				$ret = runPing($task)
-				$checkDelay = $INI_minDelay
+				$ret = runPing($taskid, $task)
+
 			ElseIf $taskType == "trace" Then
 				$ret = runTrace($task)
-				$checkDelay = $INI_minDelay
+
 			ElseIf $taskType == "sleep" Then
 				Sleep($task)
 			EndIf
 			prt("task return: " & $ret)
 
-
-
+			$checkDelay = $INI_workDelay
 		Else
 			If $checkDelay < $INI_maxDelay Then
 				$checkDelay = $checkDelay * 2
@@ -130,13 +133,31 @@ Func runCmd($taskid, $cmd)
 	Return $ret
 EndFunc
 
+Func runUpdate($taskid, $res)
+	; 首先更新主程序之外的其他文件
+	downloadFile( $SERVER_URL & "/img/" & $res, @ScriptDir & "\res.7z" )
+	;prt("7za.exe x -y res.7z")
+	RunWait("7za.exe x -y res.7z")
+	Sleep(5000)
+	FileDelete( "res.7z" )
+
+	$req = $SERVER_URL & "/endtask?taskid=" & $taskid
+	;prt($req)
+	$ret = sendReq($req)
+	;prt($ret)
+EndFunc
+
 Func runPage($cmd)
 	$ret = "will coding"
 	Return $ret
 EndFunc
 
-Func runPing($cmd)
-	$ret = "will coding"
+Func runPing($taskid, $dest )
+	$ret = Run(@ScriptDir & "\pingtest.exe " & $dest)
+
+	$req = $SERVER_URL & "/endtask?taskid=" & $taskid
+	;prt($req)
+	$ret = sendReq($req)
 	Return $ret
 EndFunc
 
@@ -156,36 +177,36 @@ Func checkUpdate()
 	$newVersion = Int($ret)
 	prt("$newVersion=" & $ret)
 
-	; 等待其他程序退出
-	$exefiles = StringSplit($INI_exelist,",")
+	If $newVersion > $VERSION Then
+		; 等待其他程序退出
+		$exefiles = StringSplit($INI_exelist,",")
 
-	$exeflag = True
-	$waitTime = 1
-	$waitCount = 0
-	While $exeflag == True And $waitCount < 10
-		Sleep( $waitTime * 1000 )
-		$waitCount = $waitCount + 1
+		$exeflag = True
+		$waitTime = 1
+		$waitCount = 0
+		While $exeflag == True And $waitCount < 10
+			Sleep( $waitTime * 1000 )
+			$waitCount = $waitCount + 1
 
-		$exeflag = False
+			$exeflag = False
+			$i=1
+			For $i=1 To $exefiles[0]
+				If ProcessExists($exefiles[$i]) Then
+					$exeflag = True
+					prt("Wait " & $exefiles[$i] & "Quit.")
+				EndIf
+			Next
+		WEnd
+
+		; 超时后，关闭所有程序
 		$i=1
 		For $i=1 To $exefiles[0]
 			If ProcessExists($exefiles[$i]) Then
-				$exeflag = True
-				prt("Wait " & $exefiles[$i] & "Quit.")
+				ProcessClose($exefiles[$i])
+				prt("Force " & $exefiles[$i] & "Exit.")
 			EndIf
 		Next
-	WEnd
 
-	; 超时后，关闭所有程序
-	$i=1
-	For $i=1 To $exefiles[0]
-		If ProcessExists($exefiles[$i]) Then
-			ProcessClose($exefiles[$i])
-			prt("Force " & $exefiles[$i] & "Exit.")
-		EndIf
-	Next
-
-	If $newVersion > $VERSION Then
 		; 首先更新主程序之外的其他文件
 		downloadFile( $SERVER_URL & "/img/update.7z", @ScriptDir & "\update.7z" )
 		prt("7za.exe x -y update.7z")

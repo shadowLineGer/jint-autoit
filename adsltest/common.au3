@@ -1,7 +1,7 @@
 #include-once
 #include "jintutil.au3"
 
-$VERSION = 38
+$VERSION = 40
 
 Global $UID_DISKID = "abcdefg"
 
