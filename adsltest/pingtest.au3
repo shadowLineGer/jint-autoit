@@ -41,7 +41,7 @@ While 1
 		ExitLoop
 	EndIf
 
-	$myCmdline = @ComSpec & " /c " & "ping " & $testdomain & " > " & $pingfile
+	$myCmdline = @ComSpec & " /c " & "ping -n 10 " & $testdomain & " > " & $pingfile
 	;prt( $myCmdline )
 	RunWait( $myCmdline, @ScriptDir, @SW_HIDE )
 	Sleep(1000)
@@ -69,9 +69,8 @@ While 1
 
 		;prt($line2)
 
-		If  $flag == 0 And StringInStr($line2, "[") And StringInStr($line2, "]") Then
+		If  $flag == 0 And (StringInStr($line2, "Pinging") > 0 Or StringInStr($line2, "正在 Ping") > 0 ) Then
 			$flag = 1
-
 			$ip = ""
 			$lost = ""
 			$avg = ""
@@ -79,16 +78,26 @@ While 1
 
 			$temp = StringSplit($line2, " ")
 
-			If StringInStr($line2, "Pinging") Then
-				$ip = StringLeft($temp[3], StringLen($temp[3])-1)
+			If StringInStr($line2, "[") And StringInStr($line2, "]") Then
+				; 这是Ping 域名的情况
+				If StringInStr($line2, "Pinging") Then
+					$ip = StringLeft($temp[3], StringLen($temp[3])-1)
+				Else
+					$ip = StringLeft($temp[4], StringLen($temp[4])-1)
+				EndIf
+
+				$ip = StringRight($ip, StringLen($ip)-1)
 			Else
-				$ip = StringLeft($temp[4], StringLen($temp[4])-1)
+				; 这是直接ping IP的情况
+				If StringInStr($line2, "Pinging") Then
+					$ip = $temp[2]
+				Else
+					$ip = $temp[3]
+				EndIf
 			EndIf
 
-			$ip = StringRight($ip, StringLen($ip)-1)
 			$yunyingshang = getYYS($ip, $testdomain)
 
-			$i = $i + 1
 		EndIf
 
 		If $flag == 1 And StringInStr($line2, "数据包") Or StringInStr($line2, "Packets") Then
