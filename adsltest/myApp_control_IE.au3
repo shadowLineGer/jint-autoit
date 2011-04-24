@@ -78,9 +78,12 @@ Func testMain( $workpath, $username, $testplace, $roundNo )
 
     ; ∏ÊÀﬂServer∂À£¨≤‚ ‘ÕÍ≥…
 	$reqUrl = $SERVER_URL & "/endtest?place=" & $testplace & "&roundno=" & $roundNo
-	prt($reqUrl)
+	;prt($reqUrl)
 	$ret = sendReq($reqUrl)
-	prt( $ret )
+	;prt( $ret )
+	Sleep(1000)
+	$ret = sendReq($reqUrl)
+	;prt( $ret )
 
 
 	MsgBox(0, "Output", "Finished", 10)
