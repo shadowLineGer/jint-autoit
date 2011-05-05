@@ -316,7 +316,10 @@ EndFunc
 ;~ EndFunc   ;==>OpenHttpWatch
 
 Func ClearCacheByCmd()
-	$cmdtext = @ComSpec & " /c RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255"
-	RunWait( $cmdtext, "",@SW_HIDE  )
+	$cmdtext = " RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255"
+	runDos($cmdtext)
+
+	$cmdtext = "ipconfig /flushdns"
+	runDos($cmdtext)
 EndFunc
 

@@ -34,7 +34,6 @@ Func checkServer()
 	ElseIf checkServerStatus($AwsUrl) Then
 		$SERVER_URL = $AwsUrl
 		sleep(10)
-
 	EndIf
 EndFunc
 
