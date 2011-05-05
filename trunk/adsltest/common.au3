@@ -1,7 +1,7 @@
 #include-once
 #include "jintutil.au3"
 
-$VERSION = 40
+$VERSION = 41
 
 Global $UID_DISKID = "abcdefg"
 
@@ -14,10 +14,10 @@ OpenAdsl()
 ; 检查哪个Server是可以使用的
 checkServer()
 ; 检查是否合法的客户端
-If Not checkAuth() Then
-	MsgBox(0, "Error", "Err00001:Network Error", 10 )
-	Exit
-EndIf
+;If Not checkAuth() Then
+;	MsgBox(0, "Error", "Err00001:Network Error", 10 )
+;	Exit
+;EndIf
 
 ; 如果管理员进程没有启动，启动之
 checkManager()
