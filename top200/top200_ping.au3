@@ -16,7 +16,7 @@ If @error = -1 Then
 	prt("FileOpen @error " & @error & "  file:" & $SITELISTPATH)
 EndIf
 
-$pingResultFile = FileOpen(@ScriptDir & "\pingResult" & $roundno & "_1.txt", 2)
+$pingResultFile = FileOpen(@ScriptDir & "\SubDomainResult" & $roundno & "_1.txt", 2)
 If @error = -1 Then
 	prt("FileOpen @error " & @error & "  file: pingResult.txt" )
 EndIf
@@ -46,6 +46,7 @@ While 1
 	$lost = ""
 	$avg = ""
 	$yunyingshang = ""
+	$avgPingtime = ""
 	;prt("will while" )
 	While 1
 		;prt("start while" )
@@ -84,7 +85,7 @@ While 1
 				EndIf
 			EndIf
 
-			$yunyingshang = getYYS($ip, $testdomain)
+			$yunyingshang = getYYS($ip)
 
 		EndIf
 
@@ -148,7 +149,7 @@ MsgBox(0, "Output", "已完成IP测试", 20)
 prt( @ScriptName & " END.")
 
 ; -----------------------------------------  函数的分隔线  -----------------------------------------------
-Func getYYS($ip, $domain)
+Func getYYS($ip)
 	$yysName = "not found"
 	$IpCnUrl = "http://ip.cn/getip.php?action=queryip&ip_url=" & $ip
 
@@ -173,6 +174,14 @@ Func getYYS($ip, $domain)
 		$yysName = $ret
 	EndIf
 	sleep(100)
+
+	$yysTemp = StringSplit($yysName, " ")
+
+	;prt("----" & $yysTemp[0] & "----")
+	If $yysTemp[0] > 1 Then
+		$yysName = $yysTemp[2] & @TAB & $yysTemp[1]
+	EndIf
+	;prt("-------" & $yysName & "-------")
 
 	return $yysName
 EndFunc
