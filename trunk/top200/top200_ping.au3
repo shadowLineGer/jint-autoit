@@ -30,8 +30,8 @@ While 1
 		ExitLoop
 	EndIf
 
-	$myCmdline = @ComSpec & " /c " & "ping " & $testdomain & " > " & $pingfile
-	;prt( $myCmdline )
+	$myCmdline = @ComSpec & " /c " & "ping -n 2 " & $testdomain & " > " & $pingfile
+	prt( $myCmdline )
 	RunWait( $myCmdline, @ScriptDir, @SW_HIDE )
 	Sleep(100)
 
@@ -85,7 +85,7 @@ While 1
 				EndIf
 			EndIf
 
-			$yunyingshang = getYYS($ip)
+			$yunyingshang = "YYS"  ;getYYS($ip)
 
 		EndIf
 
@@ -120,14 +120,14 @@ While 1
 
 			$aResult =  $testdomain & @TAB & $ip & @TAB & $yunyingshang & @TAB & $avgPingtime  & @TAB & $lost
 			FileWrite( $pingResultFile, $aResult & @CRLF )
-			TrayTip("pingtest", $testdomain & " " & $ip & " " & $lost & " " & $avgPingtime , 3, 1 )
+			TrayTip("" & (($yCount-1)*2000+$xCount), $aResult , 3, 1 )
 			;prt( $aResult )
 
-			If $xCount >= 400 Then
+			If $xCount >= 2000 Then
 				$xCount = 0
 				$yCount = $yCount + 1
 				FileClose( $pingResultFile )
-				$pingResultFile = FileOpen(@ScriptDir & "\pingResult" & $roundno & "_" & $yCount & ".txt", 2)
+				$pingResultFile = FileOpen(@ScriptDir & "\SubDomainResult" & $roundno & "_" & $yCount & ".txt", 2)
 			Else
 				$xCount = $xCount + 1
 			EndIf
@@ -166,10 +166,14 @@ Func getYYS($ip)
 
 		$retByte = sendReq($IpCnUrl)
 		$ret2 = BinaryToString($retByte, 0 )
-		If @error Then prt("Decode error about ip.cn")
-		;prt($ret2)
-		$temp = StringSplit($ret2, "£º")
-		$yysName = $temp[3]
+		If @error Then
+			prt("Decode error about " & $ip & " from ip.cn ")
+		Else
+			$temp = StringSplit($ret2, "£º")
+			If $temp[0] > 2 Then
+				$yysName = $temp[3]
+			EndIf
+		EndIf
 	Else
 		$yysName = $ret
 	EndIf
