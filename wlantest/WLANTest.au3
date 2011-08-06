@@ -13,23 +13,24 @@ prt(@ScriptName & " start.")
 $WORKPATH = @ScriptDir & "\data"
 $TESTPLACE = getINI("testplace")
 $testRoundNo = getLongRoundNo()
+$THISTESTPATH = ""
 
 
 Opt("GUIOnEventMode", 1)  ; 切换为 OnEvent 模式
-$mainwindow = GUICreate("CMCC WLAN Auto Test Tool V3.0" , 500, 300)
+$mainwindow = GUICreate("CMCC WLAN Auto Test Tool V3.0" , 500, 200)
 GUISetOnEvent($GUI_EVENT_CLOSE, "CLOSEClicked")
-GUICtrlCreateLabel("中国移动 WLAN 自动测试工具  V3.0" , 30, 10)
+$infoLabel = GUICtrlCreateLabel("欢迎使中国移动 WLAN 自动测试工具 ", 10, 10, 300, 20)
 
-$testPlaceLabel = GUICtrlCreateLabel("测试点名称:", 10, 110, 300, 25 )
-$testPlaceText = GUICtrlCreateInput( $TESTPLACE, 100, 110, 300, 25 )
+$testPlaceLabel = GUICtrlCreateLabel("测试点名称:", 10, 45, 300, 25 )
+$testPlaceText = GUICtrlCreateInput( $TESTPLACE, 80, 40, 300, 25 )
 
 
-$testRoundLabel = GUICtrlCreateLabel("测试轮次:", 10, 140, 300, 25 )
-$testRoundText = GUICtrlCreateInput( $testRoundNo, 100, 140, 300, 25 )
+$testRoundLabel = GUICtrlCreateLabel("测试轮次:", 10, 75, 300, 25 )
+$testRoundText = GUICtrlCreateInput( $testRoundNo, 80, 70, 300, 25 )
 
-$buttonTest = GUICtrlCreateButton("开始测试", 100, 200, 160, 60 )
+$buttonTest = GUICtrlCreateButton("开始测试", 80, 110, 160, 60 )
 
-$infoLabel = GUICtrlCreateLabel("欢迎使中国移动 WLAN 自动测试工具 ", 10, 280, 300, 20)
+
 
 ;绑定处理函数
 GUISetOnEvent($GUI_EVENT_CLOSE, "CLOSEClicked")
@@ -54,49 +55,128 @@ Func startTest()
 		DirCreate( $WORKPATH )
 	EndIf
 
-	DirCreate( $WORKPATH & "\" & $testRoundNo )
+	$THISTESTPATH = $WORKPATH & "\" & $testRoundNo & "_" & $TESTPLACE
+	DirCreate( $THISTESTPATH )
 
 	testMain( $WORKPATH )
 
+	setInfo( "测试完成" )
 EndFunc
 
 Func testMain( $datapath )
+	$taskType = "page"
+	$runCount = ""
+	$task = "www.10086.cn"
+
 	; read task.txt
+	$taskfile = @ScriptDir & "\" & "task.txt"
 
-	$taskType
-	$runCount
-	$task
+	If Not FileExists($taskfile) Then
+		pop($taskfile & " Not Exist! ")
+	Else
+		$file = FileOpen($taskfile, 0)
+		If @error = -1 Then
+			prt("FileOpen @error " & @error & "  file:" & $taskfile)
+		EndIf
 
+		While 1
+			$taskline = FileReadLine($file)
+			If @error = 1 Or @error = -1 Then
+				;prt("FileReadLine @error " & @error & "  file:" & $SITELISTPATH)
+				ExitLoop
+			EndIf
+
+			$taskline = StringStripWS($taskline, 3)
+			If StringLen($taskline) > 0 Then
+				$temp = StringSplit($taskline, " ")
+				If $temp[0] < 4 Then
+					pop("Task file format error! ")
+					prt($taskline)
+				Else
+					$taskType = $temp[1]
+					$taskName = $temp[2]
+					$runCount = $temp[3]
+					$task = $temp[4]
+
+					runTask($temp[1], $temp[2], $temp[3], $temp[4])
+					Sleep(5000)
+				EndIf
+			EndIf
+		WEnd
+	EndIf
+
+EndFunc
+
+
+Func runTask($taskType, $taskName, $runCount, $task )
 	If $taskType == "page" Then
+		setInfo( "页面测试开始" )
 		$ret = runPage($task)
 
 	ElseIf $taskType == "wlanpage" Then    ; 专为 WLAN 设计的页面测试
+		setInfo( "WLAN 测试开始" )
 		$ret = runWlanpage($task)
 
-	ElseIf $taskType == "login" Then
-		$ret = runLogin($task)
-
 	ElseIf $taskType == "ping" Then
+		setInfo( "Ping 测试开始" )
 		$ret = runPing($task)
 
 	ElseIf $taskType == "download" Then
+		setInfo( "下载测试开始" )
+		$ret = runDownload($task)
+
+	ElseIf $taskType == "up" Then
+		setInfo( "上传测试开始" )
 		$ret = runDownload($task)
 
 	ElseIf $taskType == "sn" Then  ;测试信号强度
+		setInfo( "信号强度测试开始" )
 		$ret = runSN($task)
 
 	ElseIf $taskType == "dhcp" Then
+		setInfo( "IP 地址分配测试开始" )
 		$ret = runDhcp($task)
 
 	ElseIf $taskType == "report" Then
+		setInfo( "生成报告" )
 		$ret = runReport($task)
 
 	ElseIf $taskType == "sleep" Then
+		setInfo( "测试暂停" )
 		Sleep($task)
 	EndIf
 
 	Return 0
 EndFunc
+
+Func runPage($task)
+	pop("Paeg test start.")
+	;SaveData($line, $DATAFILEPATH, $testplace, $roundNo, $pingtime )
+	$cmdline2 = "cscript //nologo pagetest.js " & $THISTESTPATH & " " &  $task
+	prt($cmdline2)
+	RunWait( $cmdline2, "",@SW_SHOW  )
+	sleep(2000)
+
+EndFunc
+
+Func runWlanpage($task)
+EndFunc
+
+Func runPing($task)
+EndFunc
+
+Func runDownload($task)
+EndFunc
+
+Func runSN($task)
+EndFunc
+
+Func runDhcp($task)
+EndFunc
+
+Func runReport($task)
+EndFunc
+
 
 
 Func CLOSEClicked()
