@@ -154,6 +154,11 @@ Func runDos($cmd)
 	return RunWait( $fullcmd, @ScriptDir) ;, @SW_HIDE )
 EndFunc
 
+Func runCmdNoWait($cmd)
+	$fullcmd = @ComSpec & " /c " & $cmd
+	return Run( $fullcmd, @ScriptDir, @SW_SHOW )
+EndFunc
+
 
 Func map_init($str)
 	$strArray = StringSplit( $str, "," )

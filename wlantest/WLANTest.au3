@@ -88,7 +88,7 @@ Func testMain( $datapath )
 
 			$taskline = StringStripWS($taskline, 3)
 			If StringLen($taskline) > 0 Then
-				$temp = StringSplit($taskline, " ")
+				$temp = getParam($taskline)
 				If $temp[0] < 4 Then
 					pop("Task file format error! ")
 					prt($taskline)
@@ -97,6 +97,7 @@ Func testMain( $datapath )
 					$taskName = $temp[2]
 					$runCount = $temp[3]
 					$task = $temp[4]
+					prt($temp[4])
 
 					runTask($temp[1], $temp[2], $temp[3], $temp[4])
 					Sleep(5000)
@@ -119,7 +120,7 @@ Func runTask($taskType, $taskName, $runCount, $task )
 
 	ElseIf $taskType == "ping" Then
 		setInfo( "Ping 测试开始" )
-		$ret = runPing($task)
+		$ret = runPing($taskName, $task)
 
 	ElseIf $taskType == "download" Then
 		setInfo( "下载测试开始" )
@@ -127,7 +128,7 @@ Func runTask($taskType, $taskName, $runCount, $task )
 
 	ElseIf $taskType == "up" Then
 		setInfo( "上传测试开始" )
-		$ret = runDownload($task)
+		$ret = runUpload($task)
 
 	ElseIf $taskType == "sn" Then  ;测试信号强度
 		setInfo( "信号强度测试开始" )
@@ -150,11 +151,11 @@ Func runTask($taskType, $taskName, $runCount, $task )
 EndFunc
 
 Func runPage($task)
-	pop("Paeg test start.")
+	pop("Page test start.")
 	;SaveData($line, $DATAFILEPATH, $testplace, $roundNo, $pingtime )
 	$cmdline2 = "cscript //nologo pagetest.js " & $THISTESTPATH & " " &  $task
 	prt($cmdline2)
-	RunWait( $cmdline2, "",@SW_SHOW  )
+	RunWait( $cmdline2, "",@SW_HIDE  )
 	sleep(2000)
 
 EndFunc
@@ -162,10 +163,15 @@ EndFunc
 Func runWlanpage($task)
 EndFunc
 
-Func runPing($task)
+Func runPing($taskName, $task)
+	$cmdline2 = "pingtest.exe " & $THISTESTPATH & " " & $taskName & " """ & $task & """"
+	runCmdNoWait($cmdline2)
 EndFunc
 
 Func runDownload($task)
+EndFunc
+
+Func runUpload($task)
 EndFunc
 
 Func runSN($task)
@@ -177,6 +183,50 @@ EndFunc
 Func runReport($task)
 EndFunc
 
+Func getParam($line)
+	$temp = StringStripWS($line, 7)
+	;MsgBox(0, "Search result:", "[" & $temp & "]")
+
+	$params = StringSplit($temp, " ")
+	$argc = ""
+
+	$flag = 1
+	$num = 0
+	Local $argcArr[1]
+
+	For $i = 1 to $params[0]
+		$idx = StringInStr( $params[$i], """")
+		If $flag == 1 Then
+			If $idx > 0 Then
+				$flag = 2
+				$argc = StringRight( $params[$i], stringlen($params[$i])-1 ) & " "
+			Else
+				$flag = 1
+				$argc = $params[$i]
+			EndIf
+		ElseIf $flag == 2 Then
+			If $idx > 0 Then
+				$flag = 1
+				$argc = $argc & " " & StringLeft( $params[$i], stringlen($params[$i])-1 ) & " "
+			Else
+				$flag = 2
+				$argc = $argc & " " & $params[$i]
+			EndIf
+		EndIf
+
+		If $flag == 1 Then
+			;MsgBox(0, "Search result:", "[" & $argc & "]")
+			_ArrayAdd( $argcArr, $argc )
+			;_ArrayDisplay( $argcArr )
+			$argc = ""
+		EndIf
+	Next
+
+	$argcArr[0] = UBound( $argcArr )
+
+	Return $argcArr
+
+EndFunc
 
 
 Func CLOSEClicked()
