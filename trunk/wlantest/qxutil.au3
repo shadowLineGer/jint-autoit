@@ -5,6 +5,8 @@
 ;prt( getINI("portal_url") )
 
 ; -----------------------------------------  函数的分隔线  -----------------------------------------------
+Global $logpath = ""
+
 Func getINI( $name )
 	$val = IniRead( @ScriptDir & "\cfg.ini", "basic", $name, "")
 	If $val == '' Then
@@ -61,7 +63,10 @@ EndFunc
 
 Func prt($str)
 	if @compiled == 1 Then
-		FileWriteLine(@ScriptDir & "\log.log", getCurrTime() & " " & $str)
+		If StringLen($logpath) < 1 Then
+			$logpath = @ScriptDir & "\log\" & getSec() & ".log"
+		EndIf
+		FileWriteLine( $logpath , getCurrTime() & " " & $str)
 	else
 		ConsoleWrite( getCurrTime() & " " & $str & @CRLF )
 	EndIf
@@ -119,10 +124,24 @@ Func getCurrTime()
 	return $time
 EndFunc
 
+Func getSec()
+	$time = @YEAR & @MON & @MDAY & @HOUR  & @MIN & @SEC
+	return $time
+EndFunc
+
 Func getHour()
 	$hour = @YEAR & @MON & @MDAY & @HOUR
 	Return $hour
 EndFunc
+
+Func getRoundNo()
+	return @YEAR & @MON & @MDAY & @HOUR ;& @MIN & @SEC
+EndFunc
+
+Func getLongRoundNo()
+	return @YEAR & @MON & @MDAY & @HOUR & @MIN ;& @SEC
+EndFunc
+
 
 Func sendReq($req)
 	$response = InetRead ( $req, 1)
@@ -133,18 +152,6 @@ EndFunc
 Func runDos($cmd)
 	$fullcmd = @ComSpec & " /c " & $cmd
 	return RunWait( $fullcmd, @ScriptDir) ;, @SW_HIDE )
-EndFunc
-
-;prt(Ping ("211.137.130.19",3000))
-;prt( @error)
-
-
-Func getRoundNo()
-	return @YEAR & @MON & @MDAY & @HOUR ;& @MIN & @SEC
-EndFunc
-
-Func getLongRoundNo()
-	return @YEAR & @MON & @MDAY & @HOUR & @MIN ;& @SEC
 EndFunc
 
 
