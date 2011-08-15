@@ -110,50 +110,54 @@ EndFunc
 
 
 Func runTask($taskType, $taskName, $runCount, $task )
-	If $taskType == "page" Then
-		setInfo( "页面测试开始" )
-		$ret = runPage($task)
+	For $i = 1 to $runCount
+		$longtaskname = $taskName & "_" & $i
 
-	ElseIf $taskType == "wlanpage" Then    ; 专为 WLAN 设计的页面测试
-		setInfo( "WLAN 测试开始" )
-		$ret = runWlanpage($task)
+		If $taskType == "page" Then
+			setInfo( "页面测试开始" )
+			$ret = runPage( $longtaskname, $task )
 
-	ElseIf $taskType == "ping" Then
-		setInfo( "Ping 测试开始" )
-		$ret = runPing($taskName, $task)
+		ElseIf $taskType == "wlanpage" Then    ; 专为 WLAN 设计的页面测试
+			setInfo( "WLAN 测试开始" )
+			$ret = runWlanpage($task)
 
-	ElseIf $taskType == "download" Then
-		setInfo( "下载测试开始" )
-		$ret = runDownload($task)
+		ElseIf $taskType == "ping" Then
+			setInfo( "Ping 测试开始" )
+			$ret = runPing($taskName, $task)
 
-	ElseIf $taskType == "up" Then
-		setInfo( "上传测试开始" )
-		$ret = runUpload($task)
+		ElseIf $taskType == "download" Then
+			setInfo( "下载测试开始" )
+			$ret = runDownload($task)
 
-	ElseIf $taskType == "sn" Then  ;测试信号强度
-		setInfo( "信号强度测试开始" )
-		$ret = runSN($task)
+		ElseIf $taskType == "up" Then
+			setInfo( "上传测试开始" )
+			$ret = runUpload($task)
 
-	ElseIf $taskType == "dhcp" Then
-		setInfo( "IP 地址分配测试开始" )
-		$ret = runDhcp($task)
+		ElseIf $taskType == "sn" Then  ;测试信号强度
+			setInfo( "信号强度测试开始" )
+			$ret = runSN($task)
 
-	ElseIf $taskType == "report" Then
-		setInfo( "生成报告" )
-		$ret = runReport($task)
+		ElseIf $taskType == "dhcp" Then
+			setInfo( "IP 地址分配测试开始" )
+			$ret = runDhcp($task)
 
-	ElseIf $taskType == "sleep" Then
-		setInfo( "测试暂停" )
-		Sleep($task)
-	EndIf
+		ElseIf $taskType == "report" Then
+			setInfo( "生成报告" )
+			$ret = runReport($task)
+
+		ElseIf $taskType == "sleep" Then
+			setInfo( "测试暂停" )
+			Sleep($task)
+		EndIf
+	Next
 
 	Return 0
 EndFunc
 
-Func runPage($task)
+Func runPage($taskname, $task)
 	pop("Page test start.")
 	;SaveData($line, $DATAFILEPATH, $testplace, $roundNo, $pingtime )
-	$cmdline2 = "cscript //nologo pagetest.js " & $THISTESTPATH & " " &  $task
+	$cmdline2 = "cscript //nologo pagetest.js " & $THISTESTPATH & " " &  $taskname & " " &  $task
 	prt($cmdline2)
 	RunWait( $cmdline2, "",@SW_HIDE  )
 	sleep(2000)

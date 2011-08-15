@@ -6,7 +6,8 @@ url = "";
 objArgs   =   WScript.Arguments;
 if ( objArgs.length>0 ){
     workpath = objArgs(0);
-    url = objArgs(1);
+    datafilename = objArgs(1);
+	url = objArgs(2);
 }
 
 // WScript.Echo("\nChecking " + url + "...\n");
@@ -27,7 +28,7 @@ control.Wait(plugin, 100);
 
 // Stop recording HTTP
 plugin.Stop();
-plugin.Log.Save( workpath + "\\" + url + ".hwl")
+plugin.Log.Save( workpath + "\\" + datafilename + ".hwl")
 
 var pageCount = plugin.Log.Pages.Count;
 if ( pageCount > 0 )
@@ -52,7 +53,17 @@ if ( pageCount > 0 )
     var compressionSavedBytes = summary.CompressionSavedBytes;
     var errorCount = summary.Errors.Count;
 
+	var testData = "&url=" + url
+                + "&loadtime=" + loadtime
+                + "&sent=" + bytesSent
+                + "&received=" + bytesReceived
+                + "&rescount=" + resCount
+                + "&errorcount=" + errorCount ;
+
     // write test data to file
+	var fs=WScript.createobject("scripting.filesystemobject");
+	recordfile = fs.opentextfile(workpath + "\\pageTestData.txt",8,true);
+	recordfile.writeline(testData)
 }
 plugin.Stop();
 
