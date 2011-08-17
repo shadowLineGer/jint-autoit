@@ -123,7 +123,7 @@ Func runTask($taskType, $taskName, $runCount, $task )
 
 		ElseIf $taskType == "ping" Then
 			setInfo( "Ping 测试开始" )
-			$ret = runPing($taskName, $task)
+			$ret = runPing($longtaskname, $task)
 
 		ElseIf $taskType == "download" Then
 			setInfo( "下载测试开始" )
@@ -139,7 +139,7 @@ Func runTask($taskType, $taskName, $runCount, $task )
 
 		ElseIf $taskType == "dhcp" Then
 			setInfo( "IP 地址分配测试开始" )
-			$ret = runDhcp($task)
+			$ret = runDhcp($taskName, $task)
 
 		ElseIf $taskType == "report" Then
 			setInfo( "生成报告" )
@@ -181,7 +181,38 @@ EndFunc
 Func runSN($task)
 EndFunc
 
-Func runDhcp($task)
+Func runDhcp($taskname, $task)
+	$cmdline2 = "ipconfig /release"
+	$cmdline3 = "ipconfig /renew"
+
+	While @MIN > 58
+		Sleep(5000)
+		prt("59 min , Wait 5 sec!")
+	WEnd
+
+	runDos($cmdline2)
+	sleep(1000)
+	$start = Int ( @MIN ) * 60 + Int (@SEC) + Int ( @MSEC ) /1000
+	;prt("$start=" & $start )
+	runDos($cmdline3)
+	$end = Int ( @MIN ) * 60 + Int (@SEC) + Int ( @MSEC ) /1000
+	;prt("$end=" & $end )
+
+	$ip = ""
+	$renewtime = Round( ( $end - $start ) , 3)
+
+	; Open Record File
+	$recordfile = $THISTESTPATH & "\testdata_" & $taskname & ".txt"
+	$file3 = FileOpen($recordfile, 1)
+	If @error = -1 Then
+		prt("FileOpen @error " & @error & "  file:" & $recordfile)
+	EndIf
+
+	$record = " ip=" & $ip & "&renewtime=" & $renewtime
+	prt( $record )
+
+	FileWriteLine($file3, $renewtime )
+
 EndFunc
 
 Func runReport($task)

@@ -63,7 +63,7 @@ if ( pageCount > 0 )
     // write test data to file
 	var fs=WScript.createobject("scripting.filesystemobject");
 	recordfile = fs.opentextfile(workpath + "\\pageTestData.txt",8,true);
-	recordfile.writeline(testData)
+	recordfile.writeline(loadtime)
 }
 plugin.Stop();
 

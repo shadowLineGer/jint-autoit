@@ -20,7 +20,15 @@ WScript.sleep(500);
 
 var ws = new ActiveXObject('WScript.shell');
 
-ws.SendKeys("+{TAB}");WScript.sleep(300);
+ws.SendKeys("{TAB}");WScript.sleep(300);
+ws.SendKeys("{TAB}");WScript.sleep(300);
+ws.SendKeys("{TAB}");WScript.sleep(300);
+ws.SendKeys("{TAB}");WScript.sleep(300);
+ws.SendKeys("{TAB}");WScript.sleep(300);
+ws.SendKeys("{TAB}");WScript.sleep(300);
+ws.SendKeys("{TAB}");WScript.sleep(300);
+ws.SendKeys("{TAB}");WScript.sleep(300);
+ws.SendKeys("{TAB}");WScript.sleep(300);
 ws.SendKeys("{TAB}");WScript.sleep(300);
 ws.SendKeys("{TAB}");WScript.sleep(300);
 ws.SendKeys("{TAB}");WScript.sleep(300);

@@ -117,7 +117,7 @@ While 1
 	If $flag == 3 Then
 		$record = " ip=" & $ip & "&lost=" & $lost & "&pingtime=" & $avg
 		prt( $record )
-		FileWriteLine($file3, $record )
+		FileWriteLine($file3, $avg )
 		ExitLoop
 	EndIf
 WEnd
