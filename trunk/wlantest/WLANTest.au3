@@ -213,6 +213,8 @@ Func runDhcp($taskname, $task)
 
 	FileWriteLine($file3, $renewtime )
 
+	FileClose($file3)
+
 EndFunc
 
 Func runReport($task)
