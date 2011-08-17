@@ -1,10 +1,6 @@
-page portal 10 http://www.10086.com
-wlanpage wlantest 10 http://www.10086.com
-ping AC_ping 1 "ping -l 32 -n 10 211.137.126.10 "
-download down 1 http://www.cmcc.com
-upload up 1 http://www.cmcc.com
-sn signaltest 1 cmcc
-dhcp dhcptest 1 cmcc
-report report 1 cmcc
-sleep sleep 1 1000
+dhcp dhcptest 10 cmcc
+page portal 10 www.10086.com
+sleep sleep 1 12000
+page monternet 10 www.monternet.com
+ping AC_ping 1 "ping -l 1024 -n 100  10.28.32.1 "
 
