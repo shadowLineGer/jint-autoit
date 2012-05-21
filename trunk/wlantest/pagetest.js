@@ -1,4 +1,4 @@
-// 测试一个url，并将测试数据送到Server端。
+// 测试一个urls
 //
 workpath = "";
 url = "";
@@ -23,8 +23,12 @@ plugin.clear();
 plugin.Record();
 
 // Goto to the URL and wait for the page to be loaded
+var myDate = new Date();
+startTime = myDate.toLocaleString( );
 plugin.GotoURL(url);
 control.Wait(plugin, 100);
+
+
 
 // Stop recording HTTP
 plugin.Stop();
@@ -63,8 +67,19 @@ if ( pageCount > 0 )
     // write test data to file
 	var fs=WScript.createobject("scripting.filesystemobject");
 	recordfile = fs.opentextfile(workpath + "\\pageTestData.txt",8,true);
-
 	recordfile.writeline(loadtime)
+	recordfile.Close()
+
+
+	var fs=WScript.createobject("scripting.filesystemobject");
+	recordfile = fs.opentextfile(workpath + "\\TestData.txt",8,true);
+
+
+	myDate.setSeconds(myDate.getSeconds()+ Math.ceil(loadtime) );
+	endTime = myDate.toLocaleString( );
+	recordfile.writeline('\t' + datafilename + ':\t' + startTime + '\t' + endTime )
+	recordfile.Close()
+
 }
 plugin.Stop();
 
