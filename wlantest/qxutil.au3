@@ -73,7 +73,7 @@ Func prt($str)
 EndFunc
 
 Func pop($str)
-	TrayTip("Debug", $str, 3, 1)
+	TrayTip("ÇªÏè²âÊÔ", $str, 3, 1)
 EndFunc
 
 
@@ -151,12 +151,12 @@ EndFunc
 
 Func runDos($cmd)
 	$fullcmd = @ComSpec & " /c " & $cmd
-	return RunWait( $fullcmd, @ScriptDir) ;, @SW_HIDE )
+	return RunWait( $fullcmd, @ScriptDir, @SW_HIDE )
 EndFunc
 
 Func runCmdNoWait($cmd)
 	$fullcmd = @ComSpec & " /c " & $cmd
-	return Run( $fullcmd, @ScriptDir, @SW_SHOW )
+	return Run( $fullcmd, @ScriptDir, @SW_HIDE )
 EndFunc
 
 
@@ -204,3 +204,18 @@ Func map_get( $map , $key )
 
 	return $str
 EndFunc
+
+Func writeTestData( $filepath, $line )
+	; Open  File
+	$file3 = FileOpen($filepath, 1)
+	If @error = -1 Then
+		prt("FileOpen @error " & @error & "  file:" & $recordfile)
+	EndIf
+
+	FileWriteLine($file3, $line )
+
+	FileClose($file3)
+EndFunc
+
+
+

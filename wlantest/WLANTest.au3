@@ -110,6 +110,12 @@ EndFunc
 
 
 Func runTask($taskType, $taskName, $runCount, $task )
+
+	;$recordfile = $THISTESTPATH & "\testdata.txt"
+	;$record = @CRLF & "[" & $taskName & "]"
+	;prt( $record )
+	;writeTestData( $recordfile, $record )
+
 	For $i = 1 to $runCount
 		$longtaskname = $taskName & "_" & $i
 
@@ -156,6 +162,7 @@ EndFunc
 
 Func runPage($taskname, $task)
 	pop("Page test start.")
+	ClearCacheByCmd()
 	;SaveData($line, $DATAFILEPATH, $testplace, $roundNo, $pingtime )
 	$cmdline2 = "cscript //nologo pagetest.js " & $THISTESTPATH & " " &  $taskname & " " &  $task
 	prt($cmdline2)
@@ -201,19 +208,10 @@ Func runDhcp($taskname, $task)
 	$ip = ""
 	$renewtime = Round( ( $end - $start ) , 3)
 
-	; Open Record File
-	$recordfile = $THISTESTPATH & "\testdata_" & $taskname & ".txt"
-	$file3 = FileOpen($recordfile, 1)
-	If @error = -1 Then
-		prt("FileOpen @error " & @error & "  file:" & $recordfile)
-	EndIf
-
+	$recordfile = $THISTESTPATH & "\testdata.txt"
 	$record = " ip=" & $ip & "&renewtime=" & $renewtime
 	prt( $record )
-
-	FileWriteLine($file3, $renewtime )
-
-	FileClose($file3)
+	writeTestData( $recordfile, $record )
 
 EndFunc
 
@@ -280,3 +278,10 @@ Func setInfo($str)
 	GUICtrlSetData($infoLabel,$info)
 EndFunc
 
+Func ClearCacheByCmd()
+	$cmdtext = "ipconfig /flushdns"
+	runDos($cmdtext)
+
+	$cmdtext = " RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255"
+	runDos($cmdtext)
+EndFunc

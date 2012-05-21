@@ -1,6 +1,4 @@
-dhcp dhcptest 10 cmcc
-page portal 10 www.10086.com
-sleep sleep 1 12000
-page monternet 10 www.monternet.com
-ping AC_ping 1 "ping -l 1024 -n 100  10.28.32.1 "
+page portal 1 g.cn
+page download 1 f.10086.cn/Feiliaodownload/Android/FeiLiao_Android_1.0.3beta.apk
+
 
